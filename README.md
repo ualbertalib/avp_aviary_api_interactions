@@ -23,6 +23,27 @@ The following script authenticates against the Aviary API and prints out the med
 python3 aviary_media_api_get.py --server ${aviary_server_name} --media_id ${media_id}
 ```
 
+## Get the `updated_at` field for resources (`updated_at` is unavailable via the web UI as of 2023-03-27)
+
+For input, use the Web UI resource table option to export. This obtains a list of resource IDs.
+
+``` bash
+python3 aviary_api_report_resources_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
+```
+
+An attempt to use the Aviary API `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of resources failed (2023-03-27) due to a limit of 100 resources returned and no documentation on how to enable paginiation.
+
+``` bash
+python3 aviary_api_report_resources_csv.py --server ${aviary_server_name} --output ${output_path}
+```
+
+For a JSON-like output (more for debugging)
+
+``` bash
+python3 aviary_api_report_resources_json.py --server ${aviary_server_name} --output ${output_path}
+```
+
+
 ## To generate test media objects
 
 The ffmpeg tool can be used to generate test video in cases where one requires a video of a certain size without copyright or permission encumbrances.

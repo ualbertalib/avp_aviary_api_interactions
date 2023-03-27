@@ -1,7 +1,7 @@
 ##############################################################################################
 # desc: connect to the Aviary API and get media item metadata 
 #       exploritory / proof-of-concept code
-# usage: python3 aviary_media_api_get.py --server ${aviary_server_name} --media_id ${media_id}
+# usage: python3 aviary_api_report_resources.py --server ${aviary_server_name} --output ${output_path}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 # date: June 15, 2022
 ##############################################################################################
@@ -30,14 +30,15 @@ auth_endpoint = 'api/v1/auth/sign_in'
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', required=True, help='Servername.')
-    parser.add_argument('--media_id', required=True, help='Media id.')
+    parser.add_argument('--output', required=True, help='Locaiton to store CSV output file.')
     return parser.parse_args()
 
 
 # initialize a session with API endpoint
 def init_session(args):
-    username = input('Username:')
+    #username = input('Username:')
     username = 'jeffery.antoniuk@ualberta.ca'
+    password = getpass('Password:')
 
     session = requests.Session()
     session.auth = (username, password)
@@ -113,11 +114,15 @@ def process(args, session):
     resources = get_collection_resources(args, session, collection['id'])
     resource_list = json.loads(resources)
     for resource in resource_list['data'] :
-        for media_id in resource['media_file_id'] :
-            media = get_media_item(args, session, media_id)
-            media = json.loads(media)
-            print(media['id'])
-    break
+        item = get_resource_item(args, session, resource['resource_id'])
+        print(item.content)
+
+        # for media_id in resource['media_file_id'] :
+            # media = get_media_item(args, session, media_id)
+            # media = json.loads(media)
+            # print(media['id'])
+
+        break
 
 
 #
