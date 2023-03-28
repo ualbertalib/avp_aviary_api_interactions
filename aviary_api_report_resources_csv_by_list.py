@@ -26,9 +26,9 @@ def parse_args():
     return parser.parse_args()
 
 #
-def process(args, session, intput_csv, report_csv):
+def process(args, session, input_csv, report_csv):
 
-    for resource in intput_csv:
+    for resource in input_csv:
         item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
         item_json = json.loads(item)
         report_csv.writerow(

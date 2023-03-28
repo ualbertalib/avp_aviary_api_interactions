@@ -8,6 +8,18 @@ this module implements the AVP Aviary API client.
 
 from urllib.parse import urljoin
 import requests
+import datetime
+import json
+import os
+import requests
+import traceback
+
+# ToDo: Refine from quick proof-of-concept code
+# * replace args in function definitions
+
+
+# chunk size
+CHUNK_SIZE = 90000000
 
 # initialize a session with API endpoint
 def init_session(args, username, password):
@@ -78,3 +90,107 @@ def get_media_item(args, session, id):
     #print(response.content)
     return response.content
 
+
+# https://stackoverflow.com/questions/50994218/post-large-file-using-requests-toolbelt-to-vk
+def put_media_item(args, session, item):
+    content_name = os.path.basename(item['filepath']) 
+    content_size = os.stat(item['filepath']).st_size
+    url = urljoin(args.server, 'api/v1/media_files'),
+    index = 0
+    offet = 0
+
+    print(f"Uploading: [{item['filepath']}] with size [{content_size}]")
+
+    print(str(datetime.datetime.now()) + " #################################################")
+    try:
+        f = open(item['filepath'], 'rb')
+        while chunk := f.read(CHUNK_SIZE):
+            offset = index + len(chunk)
+            params = {
+                "collection_resource_id" : item['resource_id'],
+                "access" : item['access'],
+                "is_360" : item['is_360'],
+                "filename" : content_name,
+                #"display_name" : item['display_name'],
+                }
+            files = {"media_file" : chunk } 
+            headers = {
+                'Content-Range' : 'bytes %s-%s/%s' % (index, offset-1, content_size)
+                }
+            print(f"Uploading: [{item['filepath']}] with Content-Range[{headers['Content-Range']}]")
+            response = session.post(
+                urljoin(args.server, 'api/v1/media_files'),
+                params = params,
+                files = files,
+                headers = headers,
+                timeout=120,
+                verify=False
+            )
+            response_content = json.loads(response.content)
+            if "errors" in response_content:
+                print(f"ERROR: {response_content['errors']}")
+                print(f"{response.request.url}") 
+            print(response.__dict__)
+            index = offset
+            response.raise_for_status()
+    except Exception as e:
+        print("ERROR (begin): #################################################")
+        print(e)
+        print("#################################################")
+        print(response.__dict__)
+        print("#################################################")
+        print(traceback.format_exc())
+        print("ERROR (end): #################################################")
+
+    print(str(datetime.datetime.now()) + " #################################################")
+
+
+
+def read_in_chunks(file_object, CHUNK_SIZE):
+    while True:
+        data = file_object.read(CHUNK_SIZE)
+        if not data:
+            break
+        yield data
+
+
+def upload_based_on_avp_documentation(args, session, item):
+
+    file = item["filepath"]
+    url = urljoin(args.server, 'api/v1/media_files')
+
+    content_name = str(file)
+    content_path = os.path.abspath(file)
+    content_size = os.stat(content_path).st_size
+
+
+    print(content_name, content_path, content_size)
+
+
+    f = open(content_path, 'rb')
+
+
+    index = 0
+    offset = 0
+    headers = {}
+
+
+    for chunk in read_in_chunks(f, CHUNK_SIZE):
+        offset = index + len(chunk)
+        headers['Content-Range'] = "bytes %s-%s/%s" % (index, offset -1, content_size)
+        index = offset
+        try:
+            files = {"media_file" : chunk } 
+            params = {
+                "collection_resource_id" : item['resource_id'],
+                "access" : item['access'],
+                "is_360" : item['is_360'],
+                "filename" : content_name,
+                #"display_name" : item['display_name'],
+                }
+            r = session.post(url=url, files=files, params=params, headers=headers)
+            print(r.json())
+            print("r: %s, Content-Range: %s" % (r, headers['Content-Range']))
+        except Exception as e:
+            print(e)
+            traceback.print_exc()

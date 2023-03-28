@@ -11,8 +11,12 @@ The repository contains quickly written scripts designed to interact with the [A
 
 The following script authenticates against the Aviary API and via chunking, uploads a media file. This approach only works for media files below 1G (maybe up to 2G at times) due to security and configuration restrictions on the Aviary side (according to Feb. 2023 conversations with AVP)
 
+* Sometime after Aug/Sept tests and before Feb 2023, the API upload seems to have broken
+  * the filename was made a required parameter (not in the release notes)
+  * the API upload occurs without error but the media does not appear in the web ui and the resource media listing the the Web UI throws and error page after the API upload
+
 ``` bash
-python3 aviary_media_api_upload_chunked.py --server ${aviary_server_name}
+python3 aviary_media_api_upload_chunked.py --server ${aviary_server_name} --input input.sample.csv
 ```
 
 ## List metadata about a media item (could be extended to generate reports)
@@ -31,7 +35,7 @@ For input, use the Web UI resource table option to export. This obtains a list o
 python3 aviary_api_report_resources_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
-An attempt to use the Aviary API `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of resources failed (2023-03-27) due to a limit of 100 resources returned and no documentation on how to enable paginiation.
+An attempt to use the Aviary API `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of resources failed (2023-03-27) due to a limit of 100 resources returned and no documentation on how to enable pagination.
 
 ``` bash
 python3 aviary_api_report_resources_csv.py --server ${aviary_server_name} --output ${output_path}
@@ -42,7 +46,6 @@ For a JSON-like output (more for debugging)
 ``` bash
 python3 aviary_api_report_resources_json.py --server ${aviary_server_name} --output ${output_path}
 ```
-
 
 ## To generate test media objects
 

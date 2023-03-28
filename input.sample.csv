@@ -1,0 +1,3 @@
+resource_id,filepath,access,is_360,title,display_name
+"75072","../testsrc_72.mp4","true","false","ztestz $ title","ztestz $ title display"
+"75072","../testsrc_72.mp4","true","false","ztestz $ title: 2","ztestz $ title display: 2"
