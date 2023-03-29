@@ -146,6 +146,7 @@ def put_media_item(args, session, item):
 
 
 
+# from AVP Aviary Documentation for uploading media <https://www.aviaryplatform.com/api/v1/documentation#jump-MediaFiles-_2Fapi_2Fv1_2Fmediafiles>
 def read_in_chunks(file_object, CHUNK_SIZE):
     while True:
         data = file_object.read(CHUNK_SIZE)
@@ -154,6 +155,7 @@ def read_in_chunks(file_object, CHUNK_SIZE):
         yield data
 
 
+# from AVP Aviary Documentation for uploading media <https://www.aviaryplatform.com/api/v1/documentation#jump-MediaFiles-_2Fapi_2Fv1_2Fmediafiles>
 def upload_based_on_avp_documentation(args, session, item):
 
     file = item["filepath"]
