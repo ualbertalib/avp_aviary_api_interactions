@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get media item metadata 
+# desc: connect to the Aviary API and get media item metadata
 #       output: CSV
 #       input: CSV from the Aviary web UI resource export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
 #       exploritory / proof-of-concept code
@@ -16,6 +16,8 @@ import argparse
 import csv
 import json
 from aviary import api as aviaryApi
+from aviary import utilities as aviaryUtilities
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -25,40 +27,14 @@ def parse_args():
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
     return parser.parse_args()
 
+
 #
 def process(args, session, input_csv, report_csv):
 
     for resource in input_csv:
         item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
-        item_json = json.loads(item)
-        report_csv.writerow(
-            {
-            #"Collection ID": collection['id'],
-            #"Collection Label": collection['title'],
-            "Resource ID": item_json['data']['id'],
-            "Resource Title": item_json['data']['title'],
-            "Custom Unique ID":item_json['data']['custom_unique_identifier'],
-            "Access":item_json['data']['access'],
-            "Is Featured":item_json['data']['is_featured'],
-            "Media File IDs":item_json['data']['media_file_id'],
-            "Media Files Count":item_json['data']['media_files_count'],
-            "Transcripts Count":item_json['data']['transcripts_count'],
-            "Indexes Count":item_json['data']['indexes_count'],
-            "Persistent_URL": item_json['data']['persistent_url'],
-            "Direct URL": item_json['data']['direct_url'],
-            "Updated At": item_json['data']['updated_at'],
-            "Created At":item_json['data']['created_at'],
-            "Metadata": item_json['data']['metadata']
-            }
-        )
-
+        report_csv.writerow(aviaryUtilities.processResourceJSON(item))
         sleep(args.wait)
-
-        # for media_id in resource['media_file_id'] :
-            # media = get_media_item(args, session, media_id)
-            # media = json.loads(media)
-            # print(media['id'])
-
 
 
 #
@@ -74,8 +50,8 @@ def main():
         input_csv = csv.DictReader(input_file)
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:
             report_csv = csv.DictWriter(output_file, fieldnames=[
-                #"Collection ID",
-                #"Collection Label",
+                # "Collection ID",
+                # "Collection Label",
                 "Resource ID",
                 "Resource Title",
                 "Custom Unique ID",
