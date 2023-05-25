@@ -9,12 +9,13 @@ This module implements some cenvenience utilites.
 import json
 
 
-def processResourceJSON(item):
+def processResourceJSON(item, collection_title):
 
     item_json = json.loads(item)
     return {
         # "Collection ID": collection['id'],
         # "Collection Label": collection['title'],
+        "Collection Label": collection_title,
         "Resource ID" : item_json['data']['id'],
         "Resource Title" : item_json['data']['title'],
         "Custom Unique ID": item_json['data']['custom_unique_identifier'],

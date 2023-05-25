@@ -33,7 +33,7 @@ def process(args, session, input_csv, report_csv):
 
     for resource in input_csv:
         item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
-        report_csv.writerow(aviaryUtilities.processResourceJSON(item))
+        report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['Collection Title']))
         sleep(args.wait)
 
 
@@ -51,7 +51,7 @@ def main():
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:
             report_csv = csv.DictWriter(output_file, fieldnames=[
                 # "Collection ID",
-                # "Collection Label",
+                "Collection Label",
                 "Resource ID",
                 "Resource Title",
                 "Custom Unique ID",
