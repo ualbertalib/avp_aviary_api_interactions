@@ -1,0 +1,13 @@
+{
+  "data": {
+    "id": 3,
+    "resource_file_id": 1,
+    "is_caption": true,
+    "is_public": true,
+    "title": "1.srt",
+    "language": "en",
+    "description": "Avalon SRT Caption",
+    "is_downloadable": "Yes"
+  },
+  "success": true
+}

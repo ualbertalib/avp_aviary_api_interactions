@@ -193,3 +193,34 @@ def upload_based_on_avp_documentation(args, session, item):
         except Exception as e:
             print(e)
             traceback.print_exc()
+
+#
+def get_transcripts_item(args, session, id):
+    response = session.get(
+        urljoin(args.server, 'api/v1/transcripts/' + str(id))
+    )
+    print(f"{response.request.url}")
+    # print(response.__dict__)
+    # print(response.content)
+    return response.content
+
+
+# A GET is not supported as of 2023-05-26; see https://www.aviaryplatform.com/api/v1/documentation#Indexes
+def get_indexes_item(args, session, id):
+    response = session.get(
+        urljoin(args.server, 'api/v1/indexes/' + str(id))
+    )
+    print(f"{response.request.url}")
+    # print(response.__dict__)
+    # print(response.content)
+
+#
+def get_supplemental_files_item(args, session, id):
+    response = session.get(
+        urljoin(args.server, 'api/v1/supplemental_files/' + str(id))
+    )
+    print(f"{response.request.url}")
+    # print(response.__dict__)
+    # print(response.content)
+    return response.content
+

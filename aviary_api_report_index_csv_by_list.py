@@ -1,9 +1,9 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get media item metadata 
+# desc: connect to the Aviary API and get index item metadata 
 #       output: CSV
 #       input: CSV from the Aviary web UI resource export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
 #       exploritory / proof-of-concept code
-# usage: python3 aviary_api_report_media_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
+# usage: python3 aviary_api_report_index_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 # date: June 15, 2022
 ##############################################################################################
@@ -36,26 +36,40 @@ def process(args, session, input_csv, report_csv):
         if resource_json and 'data' in resource_json :
             for media_id in resource_json['data']['media_file_id'] :
                 media = aviaryApi.get_media_item(args, session, media_id)
-                report_csv.writerow(aviaryUtilities.processMediaJSON(media, row['Collection Title'], resource_json['data']['custom_unique_identifier']))
-                sleep(args.wait)
+                media_json = json.loads(media)
+                #for indexes_id in media_json['data']['indexes'] :
+                for indexes_id in ['49366'] :
+                    index = aviaryApi.get_indexes_item(args, session, indexes_id)
+                    print(index)
+                    parent = {
+                        'Collection Label': row['Collection Title'],
+                        'custom_unique_identifier': resource_json['data']['custom_unique_identifier'],
+                        'media_file_id': media_id 
+                    }
+                    report_csv.writerow(aviaryUtilities.processIndexJSON(index, parent)) 
+                sleep(int(args.wait))
         else:
             print('ERROR: no data')
             print(resource)
-            report_csv.writerow({'Collection resource ID': row['aviary ID'], 'Display name': resource})
+            report_csv.writerow({'Collection Label': row['aviary ID'], 'Title': resource})
 
 #
 def main():
     args = parse_args()
+
+    print("Index GET request not supported, this script fails -- https://www.aviaryplatform.com/api/v1/documentation#Indexes")
+    return
 
     username = input('Username:')
     password = getpass('Password:')
 
     session = aviaryApi.init_session(args, username, password)
 
+
     with open(args.input, 'r', encoding="utf-8", newline='') as input_file:
         input_csv = csv.DictReader(input_file)
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:
-            report_csv = csv.DictWriter(output_file, fieldnames=aviaryUtilities._media_csv_fieldnames)
+            report_csv = csv.DictWriter(output_file, fieldnames=aviaryUtilities._index_csv_fieldnames)
             report_csv.writeheader()
             process(args, session, input_csv, report_csv)
 

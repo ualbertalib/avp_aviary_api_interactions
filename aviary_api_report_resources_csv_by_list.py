@@ -31,12 +31,17 @@ def parse_args():
 #
 def process(args, session, input_csv, report_csv):
 
+    # should use the following but the documentation doesn't include pagination details 
+    # aviaryApi.get_collection_list(args, session)
+    # aviaryApi.get_collection_resources(args, session, collection['id'])
     for resource in input_csv:
         try:
             item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
             report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['Collection Title']))
         except:
             print(item)
+            # add a line to the CSV output with the error
+            report_csv.writerow({'Resource ID': resource['aviary ID'], 'Resource Title': item})
         sleep(args.wait)
 
 
