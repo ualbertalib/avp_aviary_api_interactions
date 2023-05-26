@@ -19,6 +19,7 @@ import csv
 import json
 import requests
 from aviary import api as aviaryApi
+from aviary import utilities as aviaryUtilities
 
 #
 def parse_args():
@@ -38,36 +39,12 @@ def process(args, session, report_csv):
     for resource in resource_list['data'] :
         if ('resource_id' in resource):
             item = aviaryApi.get_resource_item(args, session, resource['resource_id'])
-            item_json = json.loads(item)
-            report_csv.writerow(
-                {
-                "Collection ID": collection['id'],
-                "Collection Label": collection['title'],
-                "Resource ID": item_json['data']['id'],
-                "Resource Title": item_json['data']['title'],
-                "Custom Unique ID":item_json['data']['custom_unique_identifier'],
-                "Access":item_json['data']['access'],
-                "Is Featured":item_json['data']['is_featured'],
-                "Media File IDs":item_json['data']['media_file_id'],
-                "Media Files Count":item_json['data']['media_files_count'],
-                "Transcripts Count":item_json['data']['indexes_count'],
-                "Indexes Count":item_json['data']['title'],
-                "Persistent_URL": item_json['data']['persistent_url'],
-                "Direct URL": item_json['data']['direct_url'],
-                "Updated At": item_json['data']['updated_at'],
-                "Created At":item_json['data']['created_at'],
-                "Metadata": item_json['data']['metadata']
-                }
-            )
+            report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['title']))
         else:
             print(resource)
-
         sleep(args.wait)
+  print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")
 
-        # for media_id in resource['media_file_id'] :
-            # media = get_media_item(args, session, media_id)
-            # media = json.loads(media)
-            # print(media['id'])
 
 #
 def main():
@@ -79,24 +56,7 @@ def main():
     session = aviaryApi.init_session(args, username, password)
 
     with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:
-        report_csv = csv.DictWriter(output_file, fieldnames=[
-            "Collection ID",
-            "Collection Label",
-            "Resource ID",
-            "Resource Title",
-            "Custom Unique ID",
-            "Access",
-            "Is Featured",
-            "Media File IDs",
-            "Media Files Count",
-            "Transcripts Count",
-            "Indexes Count",
-            "Persistent_URL",
-            "Direct URL",
-            "Updated At",
-            "Created At",
-            "Metadata"
-        ])
+        report_csv = csv.DictWriter(output_file, fieldnames=aviaryUtilities._resource_csv_fieldnames)
         report_csv.writeheader()
         process(args, session, report_csv)
 

@@ -46,7 +46,7 @@ def process(args, session):
             media = aviaryApi.get_media_item(args, session, media_id)
             media = json.loads(media)
             print(media['data']['id'])
-            print("Test only")
+            print("Test only - not done - see media_csv_by_list")
     break
 
 

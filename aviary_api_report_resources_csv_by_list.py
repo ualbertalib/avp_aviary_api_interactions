@@ -32,8 +32,11 @@ def parse_args():
 def process(args, session, input_csv, report_csv):
 
     for resource in input_csv:
-        item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
-        report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['Collection Title']))
+        try:
+            item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
+            report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['Collection Title']))
+        except:
+            print(item)
         sleep(args.wait)
 
 
@@ -49,24 +52,7 @@ def main():
     with open(args.input, 'r', encoding="utf-8", newline='') as input_file:
         input_csv = csv.DictReader(input_file)
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:
-            report_csv = csv.DictWriter(output_file, fieldnames=[
-                # "Collection ID",
-                "Collection Label",
-                "Resource ID",
-                "Resource Title",
-                "Custom Unique ID",
-                "Access",
-                "Is Featured",
-                "Media File IDs",
-                "Media Files Count",
-                "Transcripts Count",
-                "Indexes Count",
-                "Persistent_URL",
-                "Direct URL",
-                "Updated At",
-                "Created At",
-                "Metadata"
-            ])
+            report_csv = csv.DictWriter(output_file, fieldnames=aviaryUtilities._resource_csv_fieldnames)
             report_csv.writeheader()
             process(args, session, input_csv, report_csv)
 
