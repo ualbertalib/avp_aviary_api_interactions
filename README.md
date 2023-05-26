@@ -12,7 +12,7 @@ The repository contains quickly written scripts designed to interact with the [A
 A SaaS vendor audio/video repository solution. Terminology:
 
 * `Resources`: term for the main container of the audio/video object (links together the metadata, `media` files, etc.)
-* `Media`: term for the container representing the one or more audio/video files, associated file metadata and linkage to the `resource`
+* `Media`: term for the container representing one or more audio/video files, associated file metadata and linkage to the `resource`
 
 ## Included Scripts
 
@@ -20,7 +20,7 @@ A SaaS vendor audio/video repository solution. Terminology:
 
 Note: the `updated_at` field is unavailable via the web UI as of 2023-03-27
 
-For input, use the Web UI resource table option to export. This obtains a list of resource IDs.
+For input, use the Web UI resource table option to export. This obtains a list of resource IDs (required due to lack of pagination in the Aviary API as of 2023-05-26).
 
 * Navigate to `/collection_resources`
 * Select `Table Options` --> `Export Resources to CSV`
@@ -43,7 +43,7 @@ python3 aviary_api_report_resources_json.py --server ${aviary_server_name} --out
 
 ### Media metadata report including the `updated_at` field
 
-For input, use the Web UI resource table option to export. This obtains a list of resource IDs.
+For input, use the Web UI resource table option to export. This obtains a list of resource IDs (required due to lack of pagination in the Aviary API as of 2023-05-26).
 
 * Navigate to `/collection_resources`
 * Select `Table Options` --> `Export Resources to CSV`
@@ -57,6 +57,37 @@ An attempt to use the Aviary API `/api/v1/collections` and `/api/v1/collections/
 ``` bash
 python3 aviary_api_report_media_csv.py --server ${aviary_server_name} --output ${output_path}
 ```
+
+### Transcripts metadata report
+
+For input, use the Web UI resource table option to export. This obtains a list of resource IDs (required due to lack of pagination in the Aviary API as of 2023-05-26).
+
+* Navigate to `/collection_resources`
+* Select `Table Options` --> `Export Resources to CSV`
+
+``` bash
+python3 aviary_api_report_transcripts_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
+`
+
+Todo: alter to remove the need for an input file of ID once pagination is available and replace with `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of media.
+
+
+### Indexes metadata report
+
+As of 2023-05-26, the Aviary API does not support a direct HTTP GET API request to gather the metadata for the `indexes` type.
+
+### Supplemental files metadata report
+
+For input, use the Web UI resource table option to export. This obtains a list of resource IDs (required due to lack of pagination in the Aviary API as of 2023-05-26).
+
+* Navigate to `/supplemental_files`
+* Select `Table Options` --> `Export Supplemental Files(s) to CSV`
+
+``` bash
+python3 aviary_api_report_supplemental_files_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
+```
+
+Todo: alter to remove the need for an input file of ID once pagination is available and replace with `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of media.
 
 ### Upload a media file via the API and attach it to an existing resource
 

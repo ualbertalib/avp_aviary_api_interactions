@@ -39,7 +39,7 @@ def process(args, session, input_csv, report_csv):
             item = aviaryApi.get_supplemental_files_item(args, session, row['ID'])
             report_csv.writerow(aviaryUtilities.processSupplementalFilesJSON(item))
         except:
-            print(item)
+            print(row)
             # add a line to the CSV output with the error
             report_csv.writerow({'Supplemental Files ID': row['ID'], 'Title': item})
         sleep(args.wait)
@@ -59,9 +59,7 @@ def main():
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:
             report_csv = csv.DictWriter(output_file, fieldnames=aviaryUtilities._supplemental_files_csv_fieldnames)
             report_csv.writeheader()
-            #process(args, session, input_csv, report_csv)
-            item = aviaryApi.get_supplemental_files_item(args, session, '1167')
-            report_csv.writerow(aviaryUtilities.processSupplementalFilesJSON(item))
+            process(args, session, input_csv, report_csv)
 
 
 if __name__ == "__main__":
