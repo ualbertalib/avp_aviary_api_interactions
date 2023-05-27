@@ -32,7 +32,7 @@ _media_csv_fieldnames=[
                 # "Collection ID",
                 "Collection Label",
                 "Collection resource ID",
-                "Custom Unique resource ID",
+                "Custom unique resource ID",
                 "Display name",
                 "File name",
                 "Duration",
@@ -203,6 +203,7 @@ def processIndexJSON(item, parent):
         "Resource file ID": index_json['data']['resource_file_id'],
         "Custom unique resource ID": parent['custom_unique_identifier'], 
     }
+
 
 # Todo: redo when pagination is active
 def processSupplementalFilesJSON(item):
