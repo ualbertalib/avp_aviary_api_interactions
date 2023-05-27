@@ -67,10 +67,9 @@ For input, use the Web UI resource table option to export. This obtains a list o
 
 ``` bash
 python3 aviary_api_report_transcripts_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
-`
+```
 
 Todo: alter to remove the need for an input file of ID once pagination is available and replace with `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of media.
-
 
 ### Indexes metadata report
 
