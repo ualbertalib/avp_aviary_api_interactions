@@ -8,95 +8,95 @@ This module implements some cenvenience utilites.
 
 import json
 
-_resource_csv_fieldnames=[
-                "Resource ID",
-                # "Collection ID",
-                "Collection Label",
-                "Resource Title",
-                "Custom Unique ID",
-                "Access",
-                "Is Featured",
-                "Media File IDs",
-                "Media Files Count",
-                "Transcripts Count",
-                "Indexes Count",
-                "Persistent_URL",
-                "Direct URL",
-                "Updated At",
-                "Created At",
-                "Metadata"
-            ]
+_resource_csv_fieldnames = [
+    "Resource ID",
+    # "Collection ID",
+    "Collection Label",
+    "Resource Title",
+    "Custom Unique ID",
+    "Access",
+    "Is Featured",
+    "Media File IDs",
+    "Media Files Count",
+    "Transcripts Count",
+    "Indexes Count",
+    "Persistent_URL",
+    "Direct URL",
+    "Updated At",
+    "Created At",
+    "Metadata"
+]
 
-_media_csv_fieldnames=[
-                "Media ID",
-                # "Collection ID",
-                "Collection Label",
-                "Collection resource ID",
-                "Custom unique resource ID",
-                "Display name",
-                "File name",
-                "Duration",
-                "Access",
-                "Is downloadable",
-                "Is 360",
-                "Sequence No",
-                "Transcripts",
-                "Indexes",
-                "Updated At",
-                "Created At",
-                "Metadata",
-                'Thumbnail url',
-                'Turn on cc',
-                'Downloadable duration',
-                'Download enabled for',
-                'Media download url',
-                'Media embed url',
-                'Media embed type',
-                'Media embed code',
-                'Transcode url'
-            ]
+_media_csv_fieldnames = [
+    "Media ID",
+    # "Collection ID",
+    "Collection Label",
+    "Collection resource ID",
+    "Custom unique resource ID",
+    "Display name",
+    "File name",
+    "Duration",
+    "Access",
+    "Is downloadable",
+    "Is 360",
+    "Sequence No",
+    "Transcripts",
+    "Indexes",
+    "Updated At",
+    "Created At",
+    "Metadata",
+    'Thumbnail url',
+    'Turn on cc',
+    'Downloadable duration',
+    'Download enabled for',
+    'Media download url',
+    'Media embed url',
+    'Media embed type',
+    'Media embed code',
+    'Transcode url'
+]
 
 _transcript_csv_fieldnames = [
-                "Transcript ID",
-                # "Collection ID",
-                "Collection Label",
-                "Media ID",
-                "Resource file ID",
-                "Custom unique resource ID",
-                "Is caption",
-                "Is public",
-                "Title",
-                "Language",
-                "Description",
-                "Is downloadable",
-                "Has annotation set"
-    ]
+    "Transcript ID",
+    # "Collection ID",
+    "Collection Label",
+    "Media ID",
+    "Resource file ID",
+    "Custom unique resource ID",
+    "Is caption",
+    "Is public",
+    "Title",
+    "Language",
+    "Description",
+    "Is downloadable",
+    "Has annotation set"
+]
 
 _index_csv_fieldnames = [
-                "Index ID",
-                # "Collection ID",
-                "Collection Label",
-                "Media ID",
-                "Resource file ID",
-                "Custom unique resource ID",
-    ]
+    "Index ID",
+    # "Collection ID",
+    "Collection Label",
+    "Media ID",
+    "Resource file ID",
+    "Custom unique resource ID",
+]
 
 _supplemental_files_csv_fieldnames = [
-                "Supplemental files ID",
-                # "Collection ID",
-                # "Collection Label",
-                "Collection resource ID",
-                "Title",
-                "Description",
-                "Access",
-                "Status",
-                "Sort order",
-                "Associated file name",
-                "Associated file content type",
-                "file",
-                "Created at",
-                "Updated at"
-    ]
+    "Supplemental files ID",
+    # "Collection ID",
+    # "Collection Label",
+    "Collection resource ID",
+    "Title",
+    "Description",
+    "Access",
+    "Status",
+    "Sort order",
+    "Associated file name",
+    "Associated file content type",
+    "file",
+    "Created at",
+    "Updated at"
+]
 
 
 # Todo: redo when pagination is active
@@ -106,11 +106,11 @@ def processResourceJSON(item, collection_title):
     if 'data' not in item_json:
         raise ValueError('Does not contain a valid response')
     return {
-        "Resource ID" : item_json['data']['id'],
+        "Resource ID": item_json['data']['id'],
         # "Collection ID": collection['id'],
         # "Collection Label": collection['title'],
         "Collection Label": collection_title,
-        "Resource Title" : item_json['data']['title'],
+        "Resource Title": item_json['data']['title'],
         "Custom Unique ID": item_json['data']['custom_unique_identifier'],
         "Access": item_json['data']['access'],
         "Is Featured": item_json['data']['is_featured'],
@@ -139,7 +139,7 @@ def processMediaJSON(item, collection_title, custom_unique_identifier):
         "Collection Label": collection_title,
         "Collection resource ID": media_json['data']['collection_resource_id'],
         # "Custom Unique resource ID": resource_json['data']['custom_unique_identifier'],
-        "Custom unique resource ID": custom_unique_identifier, 
+        "Custom unique resource ID": custom_unique_identifier,
         "Display name": media_json['data']['display_name'],
         "File name": media_json['data']['file_name'] if 'file_name' in media_json['data'] else "",
         "Duration": media_json['data']['duration'],
@@ -177,7 +177,7 @@ def processTranscriptJSON(item, parent):
         "Collection Label": parent['Collection Label'],
         "Media ID": parent['media_file_id'],
         "Resource file ID": transcript_json['data']['resource_file_id'],
-        "Custom unique resource ID": parent['custom_unique_identifier'], 
+        "Custom unique resource ID": parent['custom_unique_identifier'],
         "Is caption": transcript_json['data']['is_caption'],
         "Is public": transcript_json['data']['is_public'],
         "Title": transcript_json['data']['title'],
@@ -201,7 +201,7 @@ def processIndexJSON(item, parent):
         "Collection Label": parent['Collection Label'],
         "Media ID": parent['media_file_id'],
         "Resource file ID": index_json['data']['resource_file_id'],
-        "Custom unique resource ID": parent['custom_unique_identifier'], 
+        "Custom unique resource ID": parent['custom_unique_identifier'],
     }
 
 
@@ -217,7 +217,7 @@ def processSupplementalFilesJSON(item):
         # "Collection Label": collection['title'],
         "Collection resource ID": item_json['data']['collection_resource_id'],
         "Title": item_json['data']['title'],
-        "Description":item_json['data']['description'],
+        "Description": item_json['data']['description'],
         "Access": item_json['data']['access'],
         "Status": item_json['data']['status'],
         "Sort order": item_json['data']['sort_order'] if 'sort_order' in item_json['data'] else "",
@@ -228,6 +228,5 @@ def processSupplementalFilesJSON(item):
         "Updated at": item_json['data']['updated_at']
 
         # "Collection Label": parent['Collection Label'],
-        # "Custom unique resource ID": parent['custom_unique_identifier'], 
+        # "Custom unique resource ID": parent['custom_unique_identifier'],
     }
-

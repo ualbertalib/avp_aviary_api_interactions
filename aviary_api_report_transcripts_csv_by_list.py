@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get transcript item metadata 
+# desc: connect to the Aviary API and get transcript item metadata
 #       output: CSV
 #       input: CSV from the Aviary web UI resource export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
 #       exploritory / proof-of-concept code
@@ -18,6 +18,7 @@ import json
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', required=True, help='Servername.')
@@ -26,6 +27,7 @@ def parse_args():
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
     return parser.parse_args()
 
+
 #
 def process(args, session, input_csv, report_csv):
 
@@ -33,11 +35,11 @@ def process(args, session, input_csv, report_csv):
     for row in input_csv:
         resource = aviaryApi.get_resource_item(args, session, row['aviary ID'])
         resource_json = json.loads(resource)
-        if resource_json and 'data' in resource_json :
-            for media_id in resource_json['data']['media_file_id'] :
+        if resource_json and 'data' in resource_json:
+            for media_id in resource_json['data']['media_file_id']:
                 media = aviaryApi.get_media_item(args, session, media_id)
                 media_json = json.loads(media)
-                for transcript in media_json['data']['transcripts'] :
+                for transcript in media_json['data']['transcripts']:
                     # transcript in media json looks like
                     #   {"id": 38337, "title": "YouTube en", "language": "en", "is_caption": False, "is_public": False, "has_annotation_set": False}
                     transcript_item = aviaryApi.get_transcripts_item(args, session, transcript['id'])
@@ -48,12 +50,13 @@ def process(args, session, input_csv, report_csv):
                         'media_file_id': media_id,
                         'has_annotation_set': transcript['has_annotation_set']
                     }
-                    report_csv.writerow(aviaryUtilities.processTranscriptJSON(transcript_item, parent)) 
+                    report_csv.writerow(aviaryUtilities.processTranscriptJSON(transcript_item, parent))
                 sleep(int(args.wait))
         else:
             print('ERROR: no data')
             print(resource)
             report_csv.writerow({'Collection Label': row['aviary ID'], 'Title': resource})
+
 
 #
 def main():

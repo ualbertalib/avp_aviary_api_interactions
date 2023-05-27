@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get media item metadata 
+# desc: connect to the Aviary API and get media item metadata
 #       exploritory / proof-of-concept code
 # usage: python3 aviary_media_api_get.py --server ${aviary_server_name} --media_id ${media_id}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
@@ -26,6 +26,7 @@ from aviary import api as aviaryApi
 # auth api endpoint
 auth_endpoint = 'api/v1/auth/sign_in'
 
+
 #
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -36,18 +37,18 @@ def parse_args():
 
 #
 def process(args, session):
-  collections = aviaryApi.get_collection_list(args, session)
-  collection_list = json.loads(collections)
-  for collection in collection_list['data'] :
-    resources = aviaryApi.get_collection_resources(args, session, collection['id'])
-    resource_list = json.loads(resources)
-    for resource in resource_list['data'] :
-        for media_id in resource['media_file_id'] :
-            media = aviaryApi.get_media_item(args, session, media_id)
-            media = json.loads(media)
-            print(media['data']['id'])
-            print("Test only - not done - see media_csv_by_list")
-    break
+    collections = aviaryApi.get_collection_list(args, session)
+    collection_list = json.loads(collections)
+    for collection in collection_list['data']:
+        resources = aviaryApi.get_collection_resources(args, session, collection['id'])
+        resource_list = json.loads(resources)
+        for resource in resource_list['data']:
+            for media_id in resource['media_file_id']:
+                media = aviaryApi.get_media_item(args, session, media_id)
+                media = json.loads(media)
+                print(media['data']['id'])
+                print("Test only - not done - see media_csv_by_list")
+            break
 
 
 #

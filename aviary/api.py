@@ -194,6 +194,7 @@ def upload_based_on_avp_documentation(args, session, item):
             print(e)
             traceback.print_exc()
 
+
 #
 def get_transcripts_item(args, session, id):
     response = session.get(
@@ -214,6 +215,7 @@ def get_indexes_item(args, session, id):
     # print(response.__dict__)
     # print(response.content)
 
+
 #
 def get_supplemental_files_item(args, session, id):
     response = session.get(
@@ -223,4 +225,3 @@ def get_supplemental_files_item(args, session, id):
     # print(response.__dict__)
     # print(response.content)
     return response.content
-

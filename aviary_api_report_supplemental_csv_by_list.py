@@ -31,14 +31,14 @@ def parse_args():
 #
 def process(args, session, input_csv, report_csv):
 
-    # should use the following but the documentation doesn't include pagination details 
+    # should use the following but the documentation doesn't include pagination details
     # aviaryApi.get_collection_list(args, session)
     # aviaryApi.get_collection_resources(args, session, collection['id'])
     for row in input_csv:
         try:
             item = aviaryApi.get_supplemental_files_item(args, session, row['ID'])
             report_csv.writerow(aviaryUtilities.processSupplementalFilesJSON(item))
-        except:
+        except BaseException:
             print(row)
             # add a line to the CSV output with the error
             report_csv.writerow({'Supplemental Files ID': row['ID'], 'Title': item})

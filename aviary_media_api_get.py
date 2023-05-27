@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get media item metadata 
+# desc: connect to the Aviary API and get media item metadata
 #       exploritory / proof-of-concept code
 # usage: python3 aviary_media_api_get.py --server ${aviary_server_name} --media_id ${media_id}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
@@ -34,14 +34,14 @@ def parse_args():
 
 #
 def process(args, session):
-  item = aviaryApi.get_media_item(args, session, args.media_id)
-  print(item)
+    item = aviaryApi.get_media_item(args, session, args.media_id)
+    print(item)
 
 
 #
 def main():
     args = parse_args()
-    
+
     username = input('Username:')
     password = getpass('Password:')
 

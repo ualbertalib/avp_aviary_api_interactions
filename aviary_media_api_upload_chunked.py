@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and test media file upload 
+# desc: connect to the Aviary API and test media file upload
 #       exploritory / proof-of-concept code
 # usage: python3 aviary_media_api_upload_chunked.py --server ${aviary_server_name} --input input.sample.csv
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
@@ -27,6 +27,7 @@ def parse_args():
     parser.add_argument('--input', required=True, help='Input CSV file describing the media to upload to Aviary')
     return parser.parse_args()
 
+
 #
 def process(args, session):
 
@@ -35,18 +36,19 @@ def process(args, session):
         for item in input_csv:
             print(item['title'])
             aviaryApi.put_media_item(args, session, item)
-            #aviaryApi.upload_based_on_avp_documentation(args, session, item)
+            # aviaryApi.upload_based_on_avp_documentation(args, session, item)
 
     # the input file DictReader returns an object similar to the following
-    #media_item_90m = {
+    # media_item_90m = {
     #    "resource_id" : "75072",
     #    "filepath" : "testsrc_7200.mp4",
     #    "access" : "true",
     #    "is_360" : "false",
     #    "title" : "ztestz $ title",
     #    "display_name" : "ztestz $ title"
-    #}
-    #put_media_item(args, session, media_item_90m)
+    # }
+    # put_media_item(args, session, media_item_90m)
+
 
 #
 def main():

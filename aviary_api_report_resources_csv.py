@@ -1,6 +1,6 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get media item metadata 
-#       Missing 2023-03-27: pagination (no documentation) thus result only contains 100 of `N` items per collection 
+# desc: connect to the Aviary API and get media item metadata
+#       Missing 2023-03-27: pagination (no documentation) thus result only contains 100 of `N` items per collection
 #       exploritory / proof-of-concept code
 # usage: python3 aviary_api_report_resources_csv.py --server ${aviary_server_name} --output ${output_path}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
@@ -21,6 +21,7 @@ import requests
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
+
 #
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -29,21 +30,22 @@ def parse_args():
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
     return parser.parse_args()
 
+
 #
 def process(args, session, report_csv):
-  collections = aviaryApi.get_collection_list(args, session)
-  collection_list = json.loads(collections)
-  for collection in collection_list['data'] :
-    resources = aviaryApi.get_collection_resources(args, session, collection['id'])
-    resource_list = json.loads(resources)
-    for resource in resource_list['data'] :
-        if ('resource_id' in resource):
-            item = aviaryApi.get_resource_item(args, session, resource['resource_id'])
-            report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['title']))
-        else:
-            print(resource)
-        sleep(args.wait)
-  print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")
+    collections = aviaryApi.get_collection_list(args, session)
+    collection_list = json.loads(collections)
+    for collection in collection_list['data']:
+        resources = aviaryApi.get_collection_resources(args, session, collection['id'])
+        resource_list = json.loads(resources)
+        for resource in resource_list['data']:
+            if ('resource_id' in resource):
+                item = aviaryApi.get_resource_item(args, session, resource['resource_id'])
+                report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['title']))
+            else:
+                print(resource)
+            sleep(args.wait)
+        print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")
 
 
 #

@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get media item metadata 
+# desc: connect to the Aviary API and get media item metadata
 #       output: CSV
 #       input: CSV from the Aviary web UI resource export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
 #       exploritory / proof-of-concept code
@@ -18,6 +18,7 @@ import json
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', required=True, help='Servername.')
@@ -26,6 +27,7 @@ def parse_args():
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
     return parser.parse_args()
 
+
 #
 def process(args, session, input_csv, report_csv):
 
@@ -33,8 +35,8 @@ def process(args, session, input_csv, report_csv):
     for row in input_csv:
         resource = aviaryApi.get_resource_item(args, session, row['aviary ID'])
         resource_json = json.loads(resource)
-        if resource_json and 'data' in resource_json :
-            for media_id in resource_json['data']['media_file_id'] :
+        if resource_json and 'data' in resource_json:
+            for media_id in resource_json['data']['media_file_id']:
                 media = aviaryApi.get_media_item(args, session, media_id)
                 report_csv.writerow(aviaryUtilities.processMediaJSON(media, row['Collection Title'], resource_json['data']['custom_unique_identifier']))
                 sleep(args.wait)
@@ -42,6 +44,7 @@ def process(args, session, input_csv, report_csv):
             print('ERROR: no data')
             print(resource)
             report_csv.writerow({'Collection resource ID': row['aviary ID'], 'Display name': resource})
+
 
 #
 def main():
