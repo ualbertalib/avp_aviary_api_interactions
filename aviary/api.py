@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import requests
 import datetime
 import json
+import logging
 import os
 import requests
 import traceback
@@ -54,7 +55,7 @@ def get_collection_list(args, session):
     response = session.get(
         urljoin(args.server, 'api/v1/collections')
     )
-    print(f"{response.request.url}")
+    logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
     return response.content
@@ -65,7 +66,7 @@ def get_collection_resources(args, session, id):
     response = session.get(
         urljoin(args.server, 'api/v1/collections/' + str(id) + '/resources')
     )
-    print(f"{response.request.url}")
+    logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
     return response.content
@@ -76,7 +77,7 @@ def get_resource_item(args, session, id):
     response = session.get(
         urljoin(args.server, 'api/v1/resources/' + str(id))
     )
-    print(f"{response.request.url}")
+    logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
     return response.content
@@ -87,7 +88,7 @@ def get_media_item(args, session, id):
     response = session.get(
         urljoin(args.server, 'api/v1/media_files/' + str(id))
     )
-    print(f"{response.request.url}")
+    logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
     return response.content
@@ -200,7 +201,7 @@ def get_transcripts_item(args, session, id):
     response = session.get(
         urljoin(args.server, 'api/v1/transcripts/' + str(id))
     )
-    print(f"{response.request.url}")
+    logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
     return response.content
@@ -211,7 +212,7 @@ def get_indexes_item(args, session, id):
     response = session.get(
         urljoin(args.server, 'api/v1/indexes/' + str(id))
     )
-    print(f"{response.request.url}")
+    logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
 
@@ -221,7 +222,7 @@ def get_supplemental_files_item(args, session, id):
     response = session.get(
         urljoin(args.server, 'api/v1/supplemental_files/' + str(id))
     )
-    print(f"{response.request.url}")
+    logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
     return response.content

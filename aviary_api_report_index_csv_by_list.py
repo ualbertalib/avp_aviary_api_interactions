@@ -15,6 +15,7 @@ from time import sleep
 import argparse
 import csv
 import json
+import logging
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
@@ -25,6 +26,7 @@ def parse_args():
     parser.add_argument('--output', required=True, help='Location to store CSV output file.')
     parser.add_argument('--input', required=True, help='List of resource IDs to add to the report.')
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
+    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
 
 
@@ -33,10 +35,11 @@ def process(args, session, input_csv, report_csv):
 
     # Todo: redo once upstream API documents pagination
     # Iterate through the resource list
-    for row in input_csv:
+    for i, row in enumerate(input_csv):
         # Get the resource details via the API (differs from the resource list from the Web UI)
         resource = aviaryApi.get_resource_item(args, session, row['aviary ID'])
         resource_json = json.loads(resource)
+        aviaryUtilities.validateResourceMediaList(resource_json)
         if resource_json and 'data' in resource_json:
             # Lookup media attached to the resource
             for media_id in resource_json['data']['media_file_id']:
@@ -58,6 +61,8 @@ def process(args, session, input_csv, report_csv):
             print('ERROR: no data')
             print(resource)
             report_csv.writerow({'Collection Label': row['aviary ID'], 'Title': resource})
+        aviaryUtilities.progressIndicator(i, args.logging_level)
+    print(f"Items processed: {{i + 1}}")
 
 
 #

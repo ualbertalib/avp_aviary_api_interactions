@@ -14,7 +14,7 @@ from getpass import getpass
 from time import sleep
 import argparse
 import csv
-import json
+import logging
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
@@ -25,6 +25,7 @@ def parse_args():
     parser.add_argument('--output', required=True, help='Location to store CSV output file.')
     parser.add_argument('--input', required=True, help='List of resource IDs to add to the report.')
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
+    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
 
 
@@ -34,7 +35,7 @@ def process(args, session, input_csv, report_csv):
     # should use the following but the documentation doesn't include pagination details
     # aviaryApi.get_collection_list(args, session)
     # aviaryApi.get_collection_resources(args, session, collection['id'])
-    for resource in input_csv:
+    for i, resource in enumerate(input_csv):
         try:
             item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
             report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['Collection Title']))
@@ -43,6 +44,8 @@ def process(args, session, input_csv, report_csv):
             # add a line to the CSV output with the error
             report_csv.writerow({'Resource ID': resource['aviary ID'], 'Resource title': item})
         sleep(args.wait)
+        aviaryUtilities.progressIndicator(i, args.logging_level)
+    print(f"Items processed: {i + 1}")
 
 
 #

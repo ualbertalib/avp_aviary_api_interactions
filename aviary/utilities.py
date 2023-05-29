@@ -7,6 +7,7 @@ This module implements some cenvenience utilites.
 """
 
 import json
+import logging
 
 _resource_csv_fieldnames = [
     "Resource ID",
@@ -230,3 +231,18 @@ def processSupplementalFilesJSON(item):
         # "Collection label": parent['Collection label'],
         # "Custom unique resource ID": parent['custom_unique_identifier'],
     }
+
+
+# Validate that the resource media count is the same as the number of items in the media id list
+def validateResourceMediaList(resource_json):
+    if (len(resource_json['data']['media_file_id']) != resource_json['data']['media_files_count']):
+        logging.warning(f"""Resource {resource_json['data']['id']} is missing media ids
+            -- expected count: {resource_json['data']['media_files_count']}
+            -- actual count: {len(resource_json['data']['media_file_id'])} actual id list: {resource_json['data']['media_file_id']}""")
+
+
+# Progress indicator: simple
+# Todo: replace with Python module?
+def progressIndicator(i, logging_level):
+    if (i % 50 == 0 and logging_level in [logging.ERROR, logging.WARNING]):
+        print(f"{i}.", end="", flush=True)

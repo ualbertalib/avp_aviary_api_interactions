@@ -17,6 +17,8 @@ A SaaS vendor audio/video repository solution. Terminology:
 * `Transcript`: term for the container representing one or more transcripts of the audio/video; linked to a `media` item
 * `Supplemental Files`: term for the container representing one or more supplemental files (JPEG, PDF, etc.) attached to the resource; linked to a `resource` item
 
+Note: the vendor rate limits API requests. Each of the following scripts uses a simple wait mechanism between API requests. A more advanced approach could be implemented where the wait time is dynamically computed based on the response latency plus a retry mechanism. As of 2023-05-29, running multiple scripts will cause one to fail with the default wait settings. 
+
 ## Included Scripts
 
 ### Resource metadata report including the `updated_at` field
