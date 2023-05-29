@@ -28,7 +28,11 @@ A SaaS vendor audio/video repository solution. Terminology:
 * `Transcript`: term for the container representing one or more transcripts of the audio/video; linked to a `media` item
 * `Supplemental Files`: term for the container representing one or more supplemental files (JPEG, PDF, etc.) attached to the resource; linked to a `resource` item
 
-Note: the vendor rate limits API requests. Each of the following scripts uses a simple wait mechanism between API requests. A more advanced approach could be implemented where the wait time is dynamically computed based on the response latency plus a retry mechanism. As of 2023-05-29, running multiple scripts will cause one to fail with the default wait settings. 
+Note: the vendor rate limits API requests. Each of the following scripts uses a simple wait mechanism between API requests. A more advanced approach could be implemented where the wait time is dynamically computed based on the response latency plus a retry mechanism. As of 2023-05-29, running multiple scripts will cause one to fail with the default wait settings.
+
+Note: pagination is not documented (as of 2023-05-29) so workarounds are needed for collections with a large number of resources
+
+Note: as of 2023-06-29, a resource returned by the Aviary API lists the attached media item in the `media_file_id` field. However, `media_ife_id` only contains a maximum of 10 IDs (a significant number of resources have over 10 media attached). I also tried via the Web UI, "export Media Files(s) to CSV" but the resulting file doesn't contain media IDs. How to get the entire list of media items is unknown.
 
 ## Included Scripts
 
