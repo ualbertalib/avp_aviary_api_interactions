@@ -12,10 +12,11 @@ The repository contains quickly written scripts designed to interact with the [A
 Assumes Python 3 is installed.
 
 * git clone the repository
-* python3 setup.py install --user
-  * installed required modules in a local user account
-* or without `--user` to install into the OSs central Python environment (required administrative privledges)
-
+* Install dependencies:
+  * `pip install -r requirements.txt --user`
+  * Or python3 setup.py install --user
+    * installed required modules in a local user account
+  * Or without `--user` to install into the OS's central Python environment (required administrative privledges)
 
 ## Aviary
 
