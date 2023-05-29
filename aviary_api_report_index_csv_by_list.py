@@ -32,14 +32,18 @@ def parse_args():
 def process(args, session, input_csv, report_csv):
 
     # Todo: redo once upstream API documents pagination
+    # Iterate through the resource list
     for row in input_csv:
+        # Get the resource details via the API (differs from the resource list from the Web UI)
         resource = aviaryApi.get_resource_item(args, session, row['aviary ID'])
         resource_json = json.loads(resource)
         if resource_json and 'data' in resource_json:
+            # Lookup media attached to the resource
             for media_id in resource_json['data']['media_file_id']:
                 media = aviaryApi.get_media_item(args, session, media_id)
                 media_json = json.loads(media)
                 # for indexes_id in media_json['data']['indexes'] :
+                # Todo: this fails due to the API not supporting the call
                 for indexes_id in ['49366']:
                     index = aviaryApi.get_indexes_item(args, session, indexes_id)
                     print(index)

@@ -37,12 +37,16 @@ def parse_args():
 
 #
 def process(args, session):
+
+    # Get list of collections
     collections = aviaryApi.get_collection_list(args, session)
     collection_list = json.loads(collections)
     for collection in collection_list['data']:
+        # Get list of resources attached to the given collections
         resources = aviaryApi.get_collection_resources(args, session, collection['id'])
         resource_list = json.loads(resources)
         for resource in resource_list['data']:
+            # Get list of media items attached to the given resource
             for media_id in resource['media_file_id']:
                 media = aviaryApi.get_media_item(args, session, media_id)
                 media = json.loads(media)

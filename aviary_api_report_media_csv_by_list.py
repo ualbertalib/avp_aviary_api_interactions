@@ -32,13 +32,16 @@ def parse_args():
 def process(args, session, input_csv, report_csv):
 
     # Todo: redo once upstream API documents pagination
+    # Iterate through the resource list
     for row in input_csv:
+        # Get the resource details via the API (differs from the resource list from the Web UI)
         resource = aviaryApi.get_resource_item(args, session, row['aviary ID'])
         resource_json = json.loads(resource)
         if resource_json and 'data' in resource_json:
             for media_id in resource_json['data']['media_file_id']:
+                # Get the media attached to the given resource
                 media = aviaryApi.get_media_item(args, session, media_id)
-                report_csv.writerow(aviaryUtilities.processMediaJSON(media, row['Collection Title'], resource_json['data']['custom_unique_identifier']))
+                report_csv.writerow(aviaryUtilities.processMediaJSON(media, row['Collection title'], resource_json['data']['custom_unique_identifier']))
                 sleep(args.wait)
         else:
             print('ERROR: no data')

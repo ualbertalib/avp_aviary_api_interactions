@@ -41,7 +41,7 @@ def process(args, session, input_csv, report_csv):
         except BaseException:
             print(row)
             # add a line to the CSV output with the error
-            report_csv.writerow({'Supplemental Files ID': row['ID'], 'Title': item})
+            report_csv.writerow({'Supplemental files ID': row['ID'], 'Title': item})
         sleep(args.wait)
 
 

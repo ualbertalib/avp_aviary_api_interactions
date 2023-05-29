@@ -32,20 +32,24 @@ def parse_args():
 def process(args, session, input_csv, report_csv):
 
     # Todo: redo once upstream API documents pagination
+    # Iterate through the resource list
     for row in input_csv:
+        # Get the resource details via the API (differs from the resource list from the Web UI)
         resource = aviaryApi.get_resource_item(args, session, row['aviary ID'])
         resource_json = json.loads(resource)
         if resource_json and 'data' in resource_json:
+            # Lookup media attached to the resource
             for media_id in resource_json['data']['media_file_id']:
                 media = aviaryApi.get_media_item(args, session, media_id)
                 media_json = json.loads(media)
                 for transcript in media_json['data']['transcripts']:
+                    # Lookup the transcripts attached to the given media
                     # transcript in media json looks like
                     #   {"id": 38337, "title": "YouTube en", "language": "en", "is_caption": False, "is_public": False, "has_annotation_set": False}
                     transcript_item = aviaryApi.get_transcripts_item(args, session, transcript['id'])
-                    print(transcript_item)
+                    # print(transcript_item)
                     parent = {
-                        'Collection Label': row['Collection Title'],
+                        'Collection label': row['Collection Title'],
                         'custom_unique_identifier': resource_json['data']['custom_unique_identifier'],
                         'media_file_id': media_id,
                         'has_annotation_set': transcript['has_annotation_set']
@@ -55,7 +59,7 @@ def process(args, session, input_csv, report_csv):
         else:
             print('ERROR: no data')
             print(resource)
-            report_csv.writerow({'Collection Label': row['aviary ID'], 'Title': resource})
+            report_csv.writerow({'Collection label': row['aviary ID'], 'Title': resource})
 
 
 #

@@ -33,13 +33,17 @@ def parse_args():
 
 #
 def process(args, session, report_csv):
+    # Get list of collections
     collections = aviaryApi.get_collection_list(args, session)
     collection_list = json.loads(collections)
     for collection in collection_list['data']:
+        # Get list of resources attached to a given collection
+        # Todo: this fails due to no documentated pagination in the Avairy API 2023-05-27
         resources = aviaryApi.get_collection_resources(args, session, collection['id'])
         resource_list = json.loads(resources)
         for resource in resource_list['data']:
             if ('resource_id' in resource):
+                # Get resource details
                 item = aviaryApi.get_resource_item(args, session, resource['resource_id'])
                 report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['title']))
             else:

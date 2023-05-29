@@ -12,7 +12,10 @@ The repository contains quickly written scripts designed to interact with the [A
 A SaaS vendor audio/video repository solution. Terminology:
 
 * `Resources`: term for the main container of the audio/video object (links together the metadata, `media` files, etc.)
-* `Media`: term for the container representing one or more audio/video files, associated file metadata and linkage to the `resource`
+* `Media`: term for the container representing one or more audio/video files, associated file metadata; linked to the `resource`
+* `Index`: term for the container representing one or more indexes into the media and associated metadata; linked to a `media` item
+* `Transcript`: term for the container representing one or more transcripts of the audio/video; linked to a `media` item
+* `Supplemental Files`: term for the container representing one or more supplemental files (JPEG, PDF, etc.) attached to the resource; linked to a `resource` item
 
 ## Included Scripts
 
@@ -74,6 +77,8 @@ Todo: alter to remove the need for an input file of ID once pagination is availa
 ### Indexes metadata report
 
 As of 2023-05-26, the Aviary API does not support a direct HTTP GET API request to gather the metadata for the `indexes` type.
+
+An attempt was made via `aviary_api_index.csv_by_list.py` but failed 2023-05-27
 
 ### Supplemental files metadata report
 
