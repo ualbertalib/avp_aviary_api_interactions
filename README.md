@@ -7,6 +7,16 @@ The repository contains quickly written scripts designed to interact with the [A
 * Python 3
 * ability to work with proof-of-concept level software
 
+## Setup
+
+Assumes Python 3 is installed.
+
+* git clone the repository
+* python3 setup.py install --user
+  * installed required modules in a local user account
+* or without `--user` to install into the OSs central Python environment (required administrative privledges)
+
+
 ## Aviary
 
 A SaaS vendor audio/video repository solution. Terminology:
