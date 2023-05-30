@@ -63,7 +63,6 @@ def process(args, session):
             break
         print(f"\nResource count: {i_res + 1}")
         print("Test only - not done - pagination not documented on Aviary API - see media_csv_by_list")
-    
     print("Test only - not done - pagination not documented on Aviary API - see media_csv_by_list")
 
 

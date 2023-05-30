@@ -50,7 +50,7 @@ def process(args, session, output_file):
             sleep(args.wait)
             aviaryUtilities.progressIndicator(i, args.logging_level)
         print(f"\nResource count: {i + 1}")
-    print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")            
+    print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")
 
 
 #
