@@ -9,14 +9,12 @@
 # Proof-of-concept only
 
 from getpass import getpass
-from requests_toolbelt import MultipartEncoder
-from random import uniform
 from time import sleep
-from urllib.parse import urljoin
 import argparse
 import json
-import requests
+import logging
 from aviary import api as aviaryApi
+from aviary import utilities as aviaryUtilities
 
 
 #
@@ -25,6 +23,7 @@ def parse_args():
     parser.add_argument('--server', required=True, help='Servername.')
     parser.add_argument('--output', required=True, help='Location to store JSON (like) output file.')
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', type=float, default=0.1)
+    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
 
 
@@ -34,11 +33,12 @@ def process(args, session, output_file):
     collections = aviaryApi.get_collection_list(args, session)
     collection_list = json.loads(collections)
     for collection in collection_list['data']:
+        print(f"Collection: {collection['id']}")
         resources = aviaryApi.get_collection_resources(args, session, collection['id'])
         # resources = aviaryApi.get_collection_resources(args, session, 2226)
         # resources = aviaryApi.get_collection_resources(args, session, 1787)
         resource_list = json.loads(resources)
-        for resource in resource_list['data']:
+        for i, resource in enumerate(resource_list['data']):
             if ('resource_id' in resource):
                 item = aviaryApi.get_resource_item(args, session, resource['resource_id'])
                 output_file.write(json.dumps(json.loads(item)))
@@ -48,6 +48,9 @@ def process(args, session, output_file):
                 output_file.write("\n")
                 print(resource)  # error
             sleep(args.wait)
+            aviaryUtilities.progressIndicator(i, args.logging_level)
+        print(f"\nResource count: {i + 1}")
+    print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")            
 
 
 #

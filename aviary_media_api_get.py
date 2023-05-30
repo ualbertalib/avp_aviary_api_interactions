@@ -9,18 +9,7 @@
 # Proof-of-concept only
 
 from getpass import getpass
-from requests_toolbelt import MultipartEncoder
-from random import uniform
-from time import sleep
-from urllib.parse import urljoin
 import argparse
-import csv
-import datetime
-import json
-import os
-import requests
-import sys
-import traceback
 from aviary import api as aviaryApi
 
 

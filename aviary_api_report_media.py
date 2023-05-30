@@ -17,11 +17,9 @@ import argparse
 import csv
 import datetime
 import json
-import os
-import requests
-import sys
-import traceback
+import logging
 from aviary import api as aviaryApi
+from aviary import utilities as aviaryUtilities
 
 # auth api endpoint
 auth_endpoint = 'api/v1/auth/sign_in'
@@ -32,27 +30,41 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', required=True, help='Servername.')
     parser.add_argument('--output', required=True, help='Location to store CSV output file.')
+    parser.add_argument('--wait', required=False, help='Time to wait betwen API calls.', default=0.1)
+    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
 
 
 #
 def process(args, session):
 
+    print("Test only - not done - pagination not documented on Aviary API - see media_csv_by_list")
+
     # Get list of collections
     collections = aviaryApi.get_collection_list(args, session)
     collection_list = json.loads(collections)
     for collection in collection_list['data']:
         # Get list of resources attached to the given collections
+        print(f"Collection: {collection['id']}")
         resources = aviaryApi.get_collection_resources(args, session, collection['id'])
         resource_list = json.loads(resources)
-        for resource in resource_list['data']:
+        logging.info(resource_list)
+        for i_res, resource in enumerate(resource_list['data']):
             # Get list of media items attached to the given resource
-            for media_id in resource['media_file_id']:
+            logging.error(f"Resource: {resource['resource_id']}")
+            # aviaryUtilities.validateResourceMediaList(resource)
+            for i_med, media_id in enumerate(resource['media_file_id']):
                 media = aviaryApi.get_media_item(args, session, media_id)
                 media = json.loads(media)
-                print(media['data']['id'])
-                print("Test only - not done - see media_csv_by_list")
+                logging.info(media['data']['id'])
+                print(f"\nMedia count: {i_med + 1}")
+            sleep(args.wait)
+            aviaryUtilities.progressIndicator(i_res, args.logging_level)
             break
+        print(f"\nResource count: {i_res + 1}")
+        print("Test only - not done - pagination not documented on Aviary API - see media_csv_by_list")
+    
+    print("Test only - not done - pagination not documented on Aviary API - see media_csv_by_list")
 
 
 #

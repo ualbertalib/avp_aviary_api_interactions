@@ -17,7 +17,7 @@ from urllib.parse import urljoin
 import argparse
 import csv
 import json
-import requests
+import logging
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
@@ -28,6 +28,7 @@ def parse_args():
     parser.add_argument('--server', required=True, help='Servername.')
     parser.add_argument('--output', required=True, help='Location to store CSV output file.')
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
+    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
 
 
@@ -39,17 +40,20 @@ def process(args, session, report_csv):
     for collection in collection_list['data']:
         # Get list of resources attached to a given collection
         # Todo: this fails due to no documentated pagination in the Avairy API 2023-05-27
+        print(f"Collection: {collection['id']}")
         resources = aviaryApi.get_collection_resources(args, session, collection['id'])
         resource_list = json.loads(resources)
-        for resource in resource_list['data']:
+        for i, resource in enumerate(resource_list['data']):
             if ('resource_id' in resource):
                 # Get resource details
                 item = aviaryApi.get_resource_item(args, session, resource['resource_id'])
                 report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['title']))
             else:
-                print(resource)
+                logging.error(resource)
             sleep(args.wait)
-        print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")
+            aviaryUtilities.progressIndicator(i, args.logging_level)
+        print(f"\nResource count: {i + 1}")
+    print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")
 
 
 #
