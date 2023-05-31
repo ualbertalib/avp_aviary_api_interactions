@@ -1,9 +1,9 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get transcript item metadata
+# desc: connect to the Aviary API and get index item metadata
 #       output: CSV
 #       input: CSV from the Aviary web UI resource export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
 #       exploritory / proof-of-concept code
-# usage: python3 aviary_api_report_transcripts_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
+# usage: python3 aviary_api_report_index_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 # date: June 15, 2022
 ##############################################################################################
@@ -45,31 +45,32 @@ def process(args, session, input_csv, report_csv):
             for media_id in resource_json['data']['media_file_id']:
                 media = aviaryApi.get_media_item(args, session, media_id)
                 media_json = json.loads(media)
-                for transcript in media_json['data']['transcripts']:
-                    # Lookup the transcripts attached to the given media
-                    # transcript in media json looks like
-                    #   {"id": 38337, "title": "YouTube en", "language": "en", "is_caption": False, "is_public": False, "has_annotation_set": False}
-                    transcript_item = aviaryApi.get_transcripts_item(args, session, transcript['id'])
-                    # print(transcript_item)
+                # for indexes_id in media_json['data']['indexes'] :
+                # Todo: this fails due to the API not supporting the call
+                for indexes_id in ['49366']:
+                    index = aviaryApi.get_indexes_item(args, session, indexes_id)
+                    print(index)
                     parent = {
-                        'Collection label': row['Collection Title'],
+                        'Collection Label': row['Collection Title'],
                         'custom_unique_identifier': resource_json['data']['custom_unique_identifier'],
-                        'media_file_id': media_id,
-                        'has_annotation_set': transcript['has_annotation_set']
+                        'media_file_id': media_id
                     }
-                    report_csv.writerow(aviaryUtilities.processTranscriptJSON(transcript_item, parent))
+                    report_csv.writerow(aviaryUtilities.processIndexJSON(index, parent))
                 sleep(int(args.wait))
         else:
             print('ERROR: no data')
             print(resource)
-            report_csv.writerow({'Collection label': row['aviary ID'], 'Title': resource})
+            report_csv.writerow({'Collection Label': row['aviary ID'], 'Title': resource})
         aviaryUtilities.progressIndicator(i, args.logging_level)
-    print(f"\nResources processed looking for attached transcripts: {i + 1}")
+    print(f"\nResource items processed looking for attached media indexes: {i + 1}")
 
 
 #
 def main():
     args = parse_args()
+
+    print("Index GET request not supported, this script fails -- https://www.aviaryplatform.com/api/v1/documentation#Indexes")
+    return
 
     username = input('Username:')
     password = getpass('Password:')
@@ -79,7 +80,7 @@ def main():
     with open(args.input, 'r', encoding="utf-8", newline='') as input_file:
         input_csv = csv.DictReader(input_file)
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:
-            report_csv = csv.DictWriter(output_file, fieldnames=aviaryUtilities._transcript_csv_fieldnames)
+            report_csv = csv.DictWriter(output_file, fieldnames=aviaryUtilities._index_csv_fieldnames)
             report_csv.writeheader()
             process(args, session, input_csv, report_csv)
 

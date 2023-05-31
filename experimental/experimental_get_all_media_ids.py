@@ -1,5 +1,6 @@
 # Try to gather all the media items
 # this exists because the `resource` API only list max 10 media IDs and the WebUI export doesnt' contain IDs as of 2023-05-30
+# scrapes the Web UI, media item table and outputs a CSV
 
 # Proof-of-concept only
 
@@ -101,6 +102,7 @@ def build_session_header(args, input_file, session):
     }
     logging.info(headers)
     return headers
+
 
 #
 def main():

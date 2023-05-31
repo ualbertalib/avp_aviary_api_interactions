@@ -23,13 +23,13 @@ class TestUtilities(unittest.TestCase):
             tmp = aviaryUtilities.processResourceJSON(item, 'testz')
             expected = {
                 'Resource ID': 9,
-                'Collection label': 'testz',
+                'Collection title': 'testz',
                 'Resource title': 'title-9',
                 'Custom unique ID': 'c9',
                 'Access': 'public',
                 'Is featured': False,
-                'Media file IDs': [1],
-                'Media files count': 1,
+                'Media file IDs': [1, 2, 3, 4],
+                'Media files count': 4,
                 'Transcripts count': 0,
                 'Indexes count': 0,
                 'Persistent URL': 'https://example.org/1',
@@ -46,12 +46,14 @@ class TestUtilities(unittest.TestCase):
 
         with open("tests/assets/media.json", 'r', encoding="utf-8", newline='') as input_file:
             item = input_file.read()
-            tmp = aviaryUtilities.processMediaJSON(item, 'testz', 'a')
+            tmp = aviaryUtilities.processMediaJSON(item, 'testz', 'cui' , 'lrid', 'lrt')
             expected = {
                 'Media ID': 1,
-                'Collection label': 'testz',
+                'Collection title': 'testz',
                 'Collection resource ID': 2,
-                'Custom unique resource ID': 'a',
+                'Linked resource ID': 'lrid',
+                'Linked resource title': 'lrt',
+                'Custom unique resource ID': 'cui',
                 'Display name': '03.mp3',
                 'File name': '',
                 'Duration': '00:15:34.791',
@@ -82,13 +84,22 @@ class TestUtilities(unittest.TestCase):
 
         with open("tests/assets/transcript.json", 'r', encoding="utf-8", newline='') as input_file:
             item = input_file.read()
-            tmp = aviaryUtilities.processTranscriptJSON(item, {'Collection label': 'c1', "media_file_id": "7", "custom_unique_identifier": "8", "has_annotation_set": "True"})
+            tmp = aviaryUtilities.processTranscriptJSON(item, {
+                'Collection title': 'c1',
+                'Linked resource title': 'lrt',
+                'Linked resource ID': 'lrid',
+                "media_file_id": "7",
+                "custom_unique_identifier": "8",
+                "has_annotation_set": "True"
+                })
             expected = {
                 'Transcript ID': 3,
-                'Collection label': 'c1',
-                'Media ID': '7',
-                'Resource file ID': 1,
+                'Collection title': 'c1',
+                'Linked resource title': "lrt",
+                'Linked resource ID': "lrid",
                 'Custom unique resource ID': '8',
+                'Resource file ID': 1,
+                'Media ID': '7',
                 'Is caption': True,
                 'Is public': True,
                 'Title': '1.srt',

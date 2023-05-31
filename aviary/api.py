@@ -56,7 +56,7 @@ def get_collection_list(args, session):
         urljoin(args.server, 'api/v1/collections')
     )
     logging.info(f"{response.request.url}")
-    # print(response.__dict__)
+    logging.debug(response.__dict__)
     # print(response.content)
     return response.content
 
@@ -67,7 +67,7 @@ def get_collection_resources(args, session, id):
         urljoin(args.server, 'api/v1/collections/' + str(id) + '/resources')
     )
     logging.info(f"{response.request.url}")
-    # print(response.__dict__)
+    logging.debug(response.__dict__)
     # print(response.content)
     return response.content
 
@@ -78,7 +78,7 @@ def get_resource_item(args, session, id):
         urljoin(args.server, 'api/v1/resources/' + str(id))
     )
     logging.info(f"{response.request.url}")
-    # print(response.__dict__)
+    logging.debug(response.__dict__)
     # print(response.content)
     return response.content
 
@@ -89,8 +89,8 @@ def get_media_item(args, session, id):
         urljoin(args.server, 'api/v1/media_files/' + str(id))
     )
     logging.info(f"{response.request.url}")
-    # print(response.__dict__)
-    # print(response.content)
+    logging.debug(response.__dict__)
+    # logging.debug(response.content)
     return response.content
 
 

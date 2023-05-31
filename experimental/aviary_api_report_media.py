@@ -57,7 +57,8 @@ def process(args, session):
                 media = aviaryApi.get_media_item(args, session, media_id)
                 media = json.loads(media)
                 logging.info(media['data']['id'])
-                print(f"\nMedia count: {i_med + 1}")
+                sleep(args.wait)
+            print(f"\nMedia count: {i_med + 1}")
             sleep(args.wait)
             aviaryUtilities.progressIndicator(i_res, args.logging_level)
             break
