@@ -141,7 +141,7 @@ def processMediaJSON(item, collection_title, custom_unique_identifier, linked_re
 
     media_json = json.loads(item)
     if 'data' not in media_json:
-        raise ValueError('Does not contain a valid response')
+        raise ValueError(f"Does not contain a valid response: {media_json}")
     return {
         "Media ID": media_json['data']['id'],
         # "Collection ID": collection['id'],
