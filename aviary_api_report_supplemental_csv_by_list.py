@@ -39,13 +39,13 @@ def process(args, session, input_csv, report_csv):
         try:
             item = aviaryApi.get_supplemental_files_item(args, session, row['ID'])
             report_csv.writerow(aviaryUtilities.processSupplementalFilesJSON(item))
-        except BaseException:
-            print(row)
+        except BaseException as e:
+            logging.error(f"{e} - {row}")
             # add a line to the CSV output with the error
             report_csv.writerow({'Supplemental files ID': row['ID'], 'Title': item})
         aviaryUtilities.progressIndicator(i, args.logging_level)
         sleep(args.wait)
-    print(f"Items processed: {i + 1}")
+    print(f"\nItems processed: {i + 1}")
 
 
 #

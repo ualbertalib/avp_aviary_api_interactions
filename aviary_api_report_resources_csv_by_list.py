@@ -39,13 +39,13 @@ def process(args, session, input_csv, report_csv):
         try:
             item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
             report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['Collection Title']))
-        except BaseException:
-            print(item)
+        except BaseException as e:
+            logging.error(f"{e} \n{item}")
             # add a line to the CSV output with the error
             report_csv.writerow({'Resource ID': resource['aviary ID'], 'Resource title': item})
         sleep(args.wait)
         aviaryUtilities.progressIndicator(i, args.logging_level)
-    print(f"Items processed: {i + 1}")
+    print(f"\nItems processed: {i + 1}")
 
 
 #

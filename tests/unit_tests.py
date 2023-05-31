@@ -46,7 +46,7 @@ class TestUtilities(unittest.TestCase):
 
         with open("tests/assets/media.json", 'r', encoding="utf-8", newline='') as input_file:
             item = input_file.read()
-            tmp = aviaryUtilities.processMediaJSON(item, 'testz', 'cui' , 'lrid', 'lrt')
+            tmp = aviaryUtilities.processMediaJSON(item, 'testz', 'cui', 'lrid', 'lrt')
             expected = {
                 'Media ID': 1,
                 'Collection title': 'testz',
@@ -91,7 +91,7 @@ class TestUtilities(unittest.TestCase):
                 "media_file_id": "7",
                 "custom_unique_identifier": "8",
                 "has_annotation_set": "True"
-                })
+            })
             expected = {
                 'Transcript ID': 3,
                 'Collection title': 'c1',

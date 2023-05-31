@@ -37,11 +37,11 @@ def process(args, session, input_csv, report_csv):
     # Iterate through the media list
     for i, row in enumerate(input_csv):
         # Get the media attached to the given resource
-        try: 
+        try:
             media = aviaryApi.get_media_item(args, session, row['aviary ID'])
             report_csv.writerow(aviaryUtilities.processMediaJSON(media, row['Collection Title'], "", row['Linked Resource Id'], row['Linked Resource Title']))
         except BaseException as e:
-            logging.error(f"[{row['avairy ID']}] {e}")
+            logging.error(f"[{row['aviary ID']}] {e}")
         sleep(args.wait)
         aviaryUtilities.progressIndicator(i, args.logging_level)
     print(f"\nMedia: {i + 1}")
