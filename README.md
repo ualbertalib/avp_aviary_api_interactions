@@ -16,7 +16,7 @@ Assumes Python 3 is installed.
   * `pip install -r requirements.txt --user`
   * Or python3 setup.py install --user
     * installed required modules in a local user account
-  * Or without `--user` to install into the OS's central Python environment (required administrative privledges)
+  * Or without `--user` to install into the OS's central Python environment (required administrative privleges)
 
 ## Aviary
 
@@ -30,9 +30,9 @@ A SaaS vendor audio/video repository solution. Terminology:
 
 **Note:** the vendor rate limits API requests. Each of the following scripts uses a simple wait mechanism between API requests. A more advanced approach could be implemented where the wait time is dynamically computed based on the response latency plus a retry mechanism. As of 2023-05-29, running multiple scripts will cause one to fail with the default wait settings.
 
-**Note:** pagination is not documented (as of 2023-05-29) so workarounds are needed for collections with a large number of resources
+**Note:** pagination is not documented (as of 2023-05-29) so workarounds are needed for collections with more than 100 resources (e.g., use Web UI export to gain a list of IDs)
 
-**Note:** as of 2023-06-29, a resource returned by the Aviary API lists the attached media item in the `media_file_id` field. However, `media_ife_id` only contains a maximum of 10 IDs (a significant number of resources have over 10 media attached). I also tried via the Web UI, "export Media Files(s) to CSV" but the resulting file doesn't contain media IDs. How to get the entire list of media items is unknown.
+**Note:** as of 2023-06-29, a resource returned by the Aviary API lists the attached media item(s) in the `media_file_id` field. However, `media_ife_id` only contains a maximum of 10 IDs (a significant number of resources have over 10 media attached). I also tried via the Web UI, "export Media Files(s) to CSV" but the resulting file doesn't contain media IDs. How to get the entire list of media items is unknown.
 
 ## Included Scripts
 
@@ -60,11 +60,13 @@ python3 aviary_media_api_get.py --server ${aviary_server_name} --id ${media_id} 
 
 Where:
 
-* 'c': collection resources (no pagination so max 100 returned -- as of 2023-05-27 no documentation on pagination nor obvious mechanism in API response header or content )
+* 'c': collection resources (no pagination so max 100 returned -- as of 2023-05-27 no documentation on pagination nor obvious mechanism in API response header or content)
 * 'r': resource (single)
 * 'm': media
 
 ### Reports
+
+**Note:** for the reports using the CSV export file to gain a list of IDs, some fields are required (fields can be disabled via the UI and thus prevented from being added to the CSV export). The CSV export is required due to the aforementioned lack of pagination (as of May 2023)
 
 #### Resource metadata report (including the `updated_at` field)
 
@@ -104,6 +106,8 @@ For input, use the Web UI resource table option to export. This obtains a list o
 python3 aviary_api_report_media_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
+**Note:** the resource API response, when the `media files count` is >10, the `media file IDs` will display only a maximum of 10 IDs in the list (as of May 2023). An example is resource 58924
+
 Failed: an attempt to use the Aviary API `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of media failed (2023-03-27) due to a limit of 100 resources returned and no documentation on how to enable pagination (similar to the resource report).
 
 ``` bash
@@ -132,13 +136,15 @@ For input, use the Web UI resource table option to export. This obtains a list o
 python3 aviary_api_report_transcripts_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
+**Note:** As of 2023-05-26, IDs for transcripts are discovered through the contest of the transcripts filed in the media API response -- there is no indication that the list is complete and may have a limit like the `media file IDs` field in the resources API response.
+
 Todo: alter to remove the need for an input file of ID once pagination is available and replace with `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of media.
 
 Note: `experiemental/aviary_api_report_transcripts_csv_by_list.py` uses the resource CSV export as input.
 
-#### Indexes metadata report
+#### Index metadata report
 
-As of 2023-05-26, the Aviary API does not support a direct HTTP GET API request to gather the metadata for the `indexes` type. This uses the `indexes` field in the media API response.
+**Note:** As of 2023-05-26, the Aviary API does not support a direct HTTP GET API request to gather the metadata for the `index` type. The index report is built from the contents of the `indexes` field in the media API response -- there is no indication that the list is complete and may have a limit like the `media file IDs` field in the resources API response.
 
 * Navigate to `/collection_resource_files` (`Media` in the Web UI)
 * Select `Table Options` --> `Export Resources to CSV`
@@ -147,6 +153,8 @@ As of 2023-05-26, the Aviary API does not support a direct HTTP GET API request 
 ``` bash
 python3 aviary_api_report_indexes_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
+
+**Note:** the resource API response, when the `media files count` is >10, the `media file IDs` will display only a maximum of 10 IDs in the list (as of May 2023). An example is resource 58924
 
 Todo: alter to remove the need for an input file of ID once pagination is available and replace with `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of media.
 
