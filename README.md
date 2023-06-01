@@ -47,6 +47,7 @@ The main types of scripts (the details are in the following subsections):
   * aviary_api_report_supplemental_csv_by_list.py
   * aviary_api_report_transcripts_csv_by_media_list.py
 * Upload a list of media items
+* [Experimental:](./experimental/) working with the Aviary API in different ways including the use of the collection API to find resource lists without needing the Web UI export.
 
 The details:
 
@@ -55,7 +56,7 @@ The details:
 The following script authenticates against the Aviary API and prints out the metadata of a specified object
 
 ``` bash
-python3 aviary_media_api_get.py --server ${aviary_server_name} --id ${media_id} --type [c|r|m]
+python3 aviary_api_get_by_id.py --server ${aviary_server_name} --id ${media_id} --type [c|r|m]
 ```
 
 Where:
@@ -151,7 +152,7 @@ Note: `experiemental/aviary_api_report_transcripts_csv_by_list.py` uses the reso
 * Use as the `input` in the following command
 
 ``` bash
-python3 aviary_api_report_indexes_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
+python3 aviary_api_report_index_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
 **Note:** the resource API response, when the `media files count` is >10, the `media file IDs` will display only a maximum of 10 IDs in the list (as of May 2023). An example is resource 58924
