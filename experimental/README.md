@@ -2,6 +2,10 @@
 
 Purpose:
 
+* contain forays into using the AVP Aviary API and explore what is possible
+
+Details:
+
 * scripts that fail due to limited Aviary API functionality, for example:
   * the lack of pagination and limited list length `media_file_ids` in the resource API
     * `aviary_api_report_media.py`

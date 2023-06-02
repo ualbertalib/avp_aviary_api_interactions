@@ -5,7 +5,8 @@ The repository contains quickly written scripts designed to interact with the [A
 ## Requirements
 
 * Python 3
-* ability to work with proof-of-concept level software
+* Ability to work with proof-of-concept level software (e.g., exception handling is basic and involves reading stack traces)
+* Elevated user privileges to access the Aviary API (i.e., default privileges on your campus computing id are insufficient)
 
 ## Setup
 
