@@ -145,23 +145,26 @@ def main():
 
     if args.type == 't':
         # todo: replace with a python auth script that can handle the MFA request
-        session_ui = requests.Session()
-        token = aviaryUI.get_auth_from_file(args)
-        headers = aviaryUI.build_session_header(args, token, '/transcripts', session_ui)
+        if (args.session_cookie):
+            session_ui = requests.Session()
+            token = aviaryUI.get_auth_from_file(args)
+            headers = aviaryUI.build_session_header(args, token, '/transcripts', session_ui)
+        else:
+            otp_attempt = getpass('MFA OTP:')
+            session_ui = aviaryUI.init_session(args, username, password, otp_attempt)
+            headers = {}
         process(args, session_ui, headers)
     elif args.type == 'i':
         # todo: replace with a python auth script that can handle the MFA request
-        session_ui = requests.Session()
-        token = aviaryUI.get_auth_from_file(args)
-        headers = aviaryUI.build_session_header(args, token, '/indexes', session_ui)
+        if (args.session_cookie):
+            session_ui = requests.Session()
+            token = aviaryUI.get_auth_from_file(args)
+            headers = aviaryUI.build_session_header(args, token, '/indexes', session_ui)
+        else:
+            otp_attempt = getpass('MFA OTP:')
+            session_ui = aviaryUI.init_session(args, username, password, otp_attempt)
+            headers = {}
         process(args, session_ui, headers)
-    elif args.type == 'x':
-        # test Web UI auth
-        otp_attempt = getpass('OTP:')
-        session_ui = aviaryUI.init_session(args, username, password, otp_attempt)
-        url = urljoin(args.server, '/indexes/export//' + str(args.id))
-        filename = args.id + '.webvtt'
-        download_file(session_ui, url, filename)
     else:
         session = aviaryApi.init_session(args, username, password)
         process(args, session)

@@ -68,6 +68,7 @@ def init_session(args, username, password, otp_attempt):
         logging.info(f"{token_element['value']}")
     # find the authenticity_token in the correct form
     # todo: add durability / error handling 
+    # uncertain if [2] will be the correct token - works at present
     authenticity_token = soup.find_all('input', {'name': 'authenticity_token'})[2]['value']
     data = {
         'authenticity_token': authenticity_token,
