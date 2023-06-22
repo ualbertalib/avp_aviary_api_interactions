@@ -1,10 +1,9 @@
-# set of tools to interact with the Aviary UI
+# set of tools to interact with the Aviary Web UI
 
 import logging
 import requests
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-
 
 
 def get_auth_from_file(args):
@@ -13,6 +12,7 @@ def get_auth_from_file(args):
     # todo: replace with a python auth script that can handle the MFA request
     with open(args.session_cookie, 'r', encoding="utf-8", newline='') as input_file:
         return input_file.read().rstrip("\n")
+
 
 # assume the auth cookie is captured from a browser session (kludge) and stored in a file
 # this is required to authenticate with the Web UI (different from the API)
@@ -34,12 +34,13 @@ def build_session_header(args, token, url_path, session):
     return headers
 
 
+# Auth via the Web UI username/password form and subsequent two-factor authentication form
 def init_session(args, username, password, otp_attempt):
     session = requests.Session()
     response = session.get(args.server)
     logging.info(f"URL: {response.request.url}")
     logging.info(f"Status: {response.status_code}")
-    #logging.info(f"Content: {response.content}")
+    # logging.info(f"Content: {response.content}")
     logging.info(f"Headers: {response.headers}")
     soup = BeautifulSoup(response.content, features="lxml")
     authenticity_token = soup.find('input', {'name': 'authenticity_token'})['value']
@@ -58,16 +59,16 @@ def init_session(args, username, password, otp_attempt):
     )
     logging.info(f"URL: {response.request.url}")
     logging.info(f"Status: {response.status_code}")
-    #logging.info(f"Body: {response.request.body}")
-    #logging.info(f"Headers: {response.headers}")
-    #logging.info(f"Content: {response.content}")
+    # logging.info(f"Body: {response.request.body}")
+    # logging.info(f"Headers: {response.headers}")
+    # logging.info(f"Content: {response.content}")
     # /html/body/div[2]/div[4]/div/main/div/div[3]/div/div[1]/div[2]/form/input
     soup = BeautifulSoup(response.content, features="lxml")
     authenticity_token_elements = soup.find_all('input', {'name': 'authenticity_token'})
     for token_element in authenticity_token_elements:
         logging.info(f"{token_element['value']}")
     # find the authenticity_token in the correct form
-    # todo: add durability / error handling 
+    # todo: add durability / error handling
     # uncertain if [2] will be the correct token - works at present
     authenticity_token = soup.find_all('input', {'name': 'authenticity_token'})[2]['value']
     data = {
@@ -81,10 +82,8 @@ def init_session(args, username, password, otp_attempt):
     )
     logging.info(f"URL: {response.request.url}")
     logging.info(f"Status: {response.status_code}")
-    #logging.info(f"Body: {response.request.body}")
-    #logging.info(f"Headers: {response.headers}")
-    #logging.info(f"Content: {response.content}")
+    # logging.info(f"Body: {response.request.body}")
+    # logging.info(f"Headers: {response.headers}")
+    # logging.info(f"Content: {response.content}")
 
     return session
-    
-

@@ -1,4 +1,15 @@
-# Given a type and ID, download the attached file 
+##############################################################################################
+# desc: exploratory script to download files attached to Aviary content (audio/video, transcripts, index, and supplemental files)
+#       exploritory / proof-of-concept code
+# usage:
+#       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id ${ID} --type ${TYPE}
+#       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id 53122 --type i
+# license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+# date: June 22, 2022
+##############################################################################################
+
+
+# Given a type and ID, download the attached file
 
 # Proof-of-concept only
 
@@ -32,7 +43,7 @@ def parse_args():
 
 def download_file(session, url, filename='tmp', path="/tmp/", headers=""):
     logging.info(f"URL: {url}")
-    local_file_path = path + '/' + filename 
+    local_file_path = path + '/' + filename
     with session.get(url, stream=True, headers=headers) as response:
         logging.info(f"Response: {response.request.url}")
         response.raise_for_status()
@@ -41,19 +52,21 @@ def download_file(session, url, filename='tmp', path="/tmp/", headers=""):
                 f.write(chunk)
     logging.info(f"Stored: {local_file_path}")
 
-    return local_file_path 
+    return local_file_path
+
 
 def update_media_downloadable(session, server, id, value):
     url = urljoin(server, 'api/v1/media_files/' + str(id))
     value = 'true' if (value is True) else 'false'
     params = {
-        #'is_downloadable': 'true' 
+        # 'is_downloadable': 'true'
         'is_downloadable': value
     }
     response = session.put(url, params=params)
     logging.info(f"{response.request.url}")
     logging.info(f"{response.content}")
     return response.content
+
 
 def update_resource_access(session, server, id, value):
     url = urljoin(server, 'api/v1/resources/' + str(id))
@@ -71,48 +84,41 @@ def download_media(session, args):
     item_json = json.loads(item)
     logging.info(f"Media: {item_json}")
 
-
     # set resource private before enabling download link
     # Todo: error check
-    #resource_id = item_json['data']['collection_resource_id'] 
-    #resource = aviaryApi.get_media_item(args, session, resource_id)
-    #resource_json = json.loads(item)
-    #original_resource_access = resource_json['data']['access']
-    #current_resource_access = resource_json['data']['access']
-    #if (original_resource_access != 'private'):
-    #    resource_json = update_resource_access(session, args.server, resource_id, 'private')
-    #    resource_json = json.loads(item)
-    #    current_resource_access = resource_json['data']['access']
+    # resource_id = item_json['data']['collection_resource_id']
+    # resource = aviaryApi.get_media_item(args, session, resource_id)
+    # resource_json = json.loads(item)
+    # original_resource_access = resource_json['data']['access']
+    # current_resource_access = resource_json['data']['access']
+    # if (original_resource_access != 'private'):
+    #     resource_json = update_resource_access(session, args.server, resource_id, 'private')
+    #     resource_json = json.loads(item)
+    #     current_resource_access = resource_json['data']['access']
 
     # Need is_downloadable to be true to allow downloads
     # Todo: error check
     original_is_downloadable = item_json['data']['is_downloadable']
     current_is_downloadable = False
-    if original_is_downloadable == False:
+    if original_is_downloadable is False:
         item = update_media_downloadable(session, args.server, args.id, True)
         item_json = json.loads(item)
         logging.info(f"Media: {item_json}")
         current_is_downloadable = item_json['data']['is_downloadable']
 
     url = item_json['data']['media_download_url']
-    filename = url.rsplit('/',1)[-1].split('?')[0]
+    filename = url.rsplit('/', 1)[-1].split('?')[0]
     download_file(session, url, filename)
-    
+
     # Need is_downloadable to be set to the original value
-    if original_is_downloadable != current_is_downloadable: 
+    if original_is_downloadable != current_is_downloadable:
         update_media_downloadable(session, args.server, args.id, original_is_downloadable)
         item = aviaryApi.get_media_item(args, session, args.id)
         item_json = json.loads(item)
 
-    # todo what if fails before? 
-    #if (original_resource_access != current_resource_access):
+    # todo what if fails before?
+    # if (original_resource_access != current_resource_access):
     #    resource_json = update_resource_access(session, args.server, resource_id, original_resrouce_access)
-
-
-
-
-
-
 
 
 def process(args, session, headers=""):
@@ -133,7 +139,8 @@ def process(args, session, headers=""):
         text = input("SANDBOX item only!!! Code modifies permissions. Continue (Y/n)?")
         if (text == "Y"):
             download_media(session, args)
-        
+
+
 #
 def main():
     args = parse_args()
@@ -168,7 +175,6 @@ def main():
     else:
         session = aviaryApi.init_session(args, username, password)
         process(args, session)
-
 
 
 if __name__ == "__main__":
