@@ -269,3 +269,18 @@ def validateResourceMediaList(resource_json):
 def progressIndicator(i, logging_level):
     if (i % 50 == 0 and logging_level in [logging.ERROR, logging.WARNING]):
         print(f"{i}.", end="", flush=True)
+
+
+# download a file via steam & and chunks
+def download_file(session, url, filename='tmp', path="/tmp/", headers=""):
+    logging.info(f"Download URL: {url}")
+    local_file_path = path + '/' + filename
+    with session.get(url, stream=True, headers=headers) as response:
+        logging.info(f"Status: {response.status_code} Response URL: {response.request.url}")
+        response.raise_for_status()
+        with open(local_file_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+    logging.info(f"Stored: {local_file_path}")
+
+    return local_file_path

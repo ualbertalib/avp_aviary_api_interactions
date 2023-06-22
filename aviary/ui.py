@@ -5,6 +5,8 @@ import requests
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
+from aviary import utilities as aviaryUtilities
+
 
 def get_auth_from_file(args):
     # copy the cookie from an authenticated Aviary Web UI session (via the browser dev tools -> network --> request --> cookie)
@@ -87,3 +89,18 @@ def init_session(args, username, password, otp_attempt):
     # logging.info(f"Content: {response.content}")
 
     return session
+
+
+#
+def download_transcript(args, session, id, headers=''):
+    url = urljoin(args.server, '/transcripts/export/webvtt/' + str(id))
+    filename = id + '.webvtt'
+    aviaryUtilities.download_file(session, url, filename, path=args.output_path, headers=headers)
+    # todo: test if a proper export or an html page
+
+
+def download_index(args, session, id, headers=''):
+    url = urljoin(args.server, '/indexes/export//' + str(id))  # double slash is intentional; match Web UI
+    filename = id + '.webvtt'
+    aviaryUtilities.download_file(session, url, filename, path=args.output_path, headers=headers)
+    # todo: test if a proper export or an html page

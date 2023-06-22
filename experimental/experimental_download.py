@@ -41,20 +41,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def download_file(session, url, filename='tmp', path="/tmp/", headers=""):
-    logging.info(f"URL: {url}")
-    local_file_path = path + '/' + filename
-    with session.get(url, stream=True, headers=headers) as response:
-        logging.info(f"Response: {response.request.url}")
-        response.raise_for_status()
-        with open(local_file_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-    logging.info(f"Stored: {local_file_path}")
-
-    return local_file_path
-
-
 def update_media_downloadable(session, server, id, value):
     url = urljoin(server, 'api/v1/media_files/' + str(id))
     value = 'true' if (value is True) else 'false'
@@ -108,7 +94,7 @@ def download_media(session, args):
 
     url = item_json['data']['media_download_url']
     filename = url.rsplit('/', 1)[-1].split('?')[0]
-    download_file(session, url, filename)
+    aviaryUtilities.download_file(session, url, filename)
 
     # Need is_downloadable to be set to the original value
     if original_is_downloadable != current_is_downloadable:
@@ -126,15 +112,15 @@ def process(args, session, headers=""):
         item = aviaryApi.get_supplemental_files_item(args, session, args.id)
         item_json = json.loads(item)
         logging.info(f"Supplemental File: {item_json}")
-        download_file(session, item_json['data']['file'], item_json['data']['associated_file_file_name'])
+        aviaryUtilities.download_file(session, item_json['data']['file'], item_json['data']['associated_file_file_name'])
     elif args.type == 't':
         url = urljoin(args.server, '/transcripts/export/webvtt/' + str(args.id))
         filename = args.id + '.webvtt'
-        download_file(session, url, filename, headers=headers)
+        aviaryUtilities.download_file(session, url, filename, headers=headers)
     elif args.type == 'i':
         url = urljoin(args.server, '/indexes/export//' + str(args.id))
         filename = args.id + '.webvtt'
-        download_file(session, url, filename, headers=headers)
+        aviaryUtilities.download_file(session, url, filename, headers=headers)
     elif args.type == 'm':
         text = input("SANDBOX item only!!! Code modifies permissions. Continue (Y/n)?")
         if (text == "Y"):
