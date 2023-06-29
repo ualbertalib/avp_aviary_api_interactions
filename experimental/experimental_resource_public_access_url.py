@@ -5,6 +5,7 @@
 # usage:
 #       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id ${ID} --type ${TYPE}
 #       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id 53122 --type i
+#       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id 192882 --type x
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 # date: June 22, 2023
 ##############################################################################################
