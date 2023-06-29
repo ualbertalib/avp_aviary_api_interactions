@@ -1,14 +1,13 @@
 ##############################################################################################
 # desc: exploratory script to test the resource public access URL - https://weareavp.aviaryplatform.com/collections/41/collection_resources/32667/file/101487
-#       as a means to download content and recover from unknown problems. 
+#       as a means to download content and recover from unknown problems.
 #       exploritory / proof-of-concept code
 # usage:
 #       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id ${ID} --type ${TYPE}
 #       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id 53122 --type i
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
-# date: June 22, 2022
+# date: June 22, 2023
 ##############################################################################################
-
 
 # Given a type and ID, download the attached file
 
@@ -42,7 +41,6 @@ def parse_args():
     parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.INFO)
     parser.add_argument('--session_cookie', required=False, help='File containing an auth cookie from the WebUI (temporary).')
     return parser.parse_args()
-
 
 
 def update_media_downloadable(session, server, id, value):
@@ -110,31 +108,34 @@ def download_media(session, args):
     # if (original_resource_access != current_resource_access):
     #    resource_json = update_resource_access(session, args.server, resource_id, original_resrouce_access)
 
+
 def download_media_by_resource_public_access_url(session, server, collection_id, resource_id, media_id):
-        # get duration of the expireing public access URL
-        duration = aviaryUI.resource_public_access_duration()
-        logging.info(f"Start/end: {duration}")
+    # get duration of the expireing public access URL
+    duration = aviaryUI.resource_public_access_duration()
+    logging.info(f"Start/end: {duration}")
 
-        # Start: resource view & media player hover menu "share" --> Resource Public Access URL --> expiring url
-        #   * https://ualberta.aviaryplatform.com/collections/1797/collection_resources/96596
-        # To add expiring download URL
-        #   * https://ualberta.aviaryplatform.com/encrypted_info?action=encryptedInfo&collection_resource_id=96596&duration=06-26-2023+00%3A00+-+06-26-2023+00%3A05&auto_play=false&start_time=&start_time_status=false&end_time=00%3A00%3A00&end_time_status=false&downloadable=1&type=limited_access_url
-        # The resulting URL (needs the `access` portion otherwise will not display the download link on the media player):
-        #   * https://ualberta.aviaryplatform.com/r/mk6542km08?access=jZ-jHl9T6Wem5cyFWC3qSg==
-        url = aviaryUI.download_media_setup_expiring(session, server, collection_id, resource_id, duration)
-        logging.info(f"Expiring URL: {url}")
+    # Start: resource view & media player hover menu "share" --> Resource Public Access URL --> expiring url
+    #   * https://ualberta.aviaryplatform.com/collections/1797/collection_resources/96596
+    # To add expiring download URL
+    #   * https://ualberta.aviaryplatform.com/encrypted_info?action=encryptedInfo&collection_resource_id=96596&duration=06-26-2023+00%3A00+-+06-26-2023+00%3A05
+    #       &auto_play=false&start_time=&start_time_status=false&end_time=00%3A00%3A00&end_time_status=false&downloadable=1&type=limited_access_url
+    # The resulting URL (needs the `access` portion otherwise will not display the download link on the media player):
+    #   * https://ualberta.aviaryplatform.com/r/mk6542km08?access=jZ-jHl9T6Wem5cyFWC3qSg==
+    url = aviaryUI.download_media_setup_expiring(session, server, collection_id, resource_id, duration)
+    logging.info(f"Expiring URL: {url}")
 
-        # Load URL (this should gather the credentials)
-        # download like in the media player dropdown
-        #   * /download_media/192882?
-        #       * check which parts of the header are needed
-        #   * redirects to S3 storage & returns file
-        #       * check which parts of the header are needed
-        # Todo: Do for all media attached to a resource
-        aviaryUI.resource_public_access_download_media(session, url, server, media_id, path="/tmp/")
+    # Load URL (this should gather the credentials)
+    # download like in the media player dropdown
+    #   * /download_media/192882?
+    #       * check which parts of the header are needed
+    #   * redirects to S3 storage & returns file
+    #       * check which parts of the header are needed
+    # Todo: Do for all media attached to a resource
+    aviaryUI.resource_public_access_download_media(session, url, server, media_id, path="/tmp/")
 
-        # Delete expiring URL (cleanup)
-        aviaryUI.resource_public_access_delete(session, server, resource_id, duration)
+    # Delete expiring URL (cleanup)
+    aviaryUI.resource_public_access_delete(session, server, resource_id, duration)
+
 
 def process(args, session, headers=""):
     if args.type == 's':

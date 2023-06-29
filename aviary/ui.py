@@ -111,6 +111,7 @@ def download_index(args, session, id, headers=''):
     aviaryUtilities.download_file(session, url, filename, path=args.output_path, headers=headers)
     # todo: test if a proper export or an html page
 
+
 # retieve CSRF token
 def build_resource_public_access_urls_index_header(session, url):
     # get the x-csrf-token
@@ -126,15 +127,16 @@ def build_resource_public_access_urls_index_header(session, url):
         "X-Requested-With": "XMLHttpRequest",
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "Accept": "application/json, text/javascript, */*; q=0.01"
-        
     }
     logging.info(headers)
     return headers
 
+
 # Start: resource view & media player hover menu "share" --> Resource Public Access URL --> expiring url
 #   * https://ualberta.aviaryplatform.com/collections/1797/collection_resources/96596
 # To add expiring download URL
-#   * https://ualberta.aviaryplatform.com/encrypted_info?action=encryptedInfo&collection_resource_id=96596&duration=06-26-2023+00%3A00+-+06-26-2023+00%3A05&auto_play=false&start_time=&start_time_status=false&end_time=00%3A00%3A00&end_time_status=false&downloadable=1&type=limited_access_url
+#   * https://ualberta.aviaryplatform.com/encrypted_info?action=encryptedInfo&collection_resource_id=96596&duration=06-26-2023+00%3A00+-+06-26-2023+00%3A05
+#       &auto_play=false&start_time=&start_time_status=false&end_time=00%3A00%3A00&end_time_status=false&downloadable=1&type=limited_access_url
 # The resulting URL (needs the `access` portion otherwise will not display the download link on the media player):
 #   * https://ualberta.aviaryplatform.com/r/mk6542km08?access=jZ-jHl9T6Wem5cyFWC3qSg==#
 def download_media_setup_expiring(session, server, collection_id, collection_resource_id, duration):
@@ -143,17 +145,17 @@ def download_media_setup_expiring(session, server, collection_id, collection_res
     logging.info(f"Resource: {response}")
     url = urljoin(server, 'encrypted_info')
     params = {
-       "action": "encryptedInfo",
-       "collection_resource_id": collection_resource_id,
-       #"duration": "06-26-2023 00:00 - 06-29-2023 00:05",
-       "duration": str(duration), 
-       "auto_play": "false",
-       "start_time": "",
-       "start_time_status": "false",
-       "end_time": "00:00:00",
-       "end_time_status": "false",
-       "downloadable": "1",
-       "type": "limited_access_url"
+        "action": "encryptedInfo",
+        "collection_resource_id": collection_resource_id,
+        # "duration": "06-26-2023 00:00 - 06-29-2023 00:05",
+        "duration": str(duration),
+        "auto_play": "false",
+        "start_time": "",
+        "start_time_status": "false",
+        "end_time": "00:00:00",
+        "end_time_status": "false",
+        "downloadable": "1",
+        "type": "limited_access_url"
     }
     logging.info(f"Create expiring request: {params}")
     response = session.get(url, params=params)
@@ -165,12 +167,12 @@ def download_media_setup_expiring(session, server, collection_id, collection_res
     return resp
 
 
-# Build the duration of the expiry for the resource public access URL 
+# Build the duration of the expiry for the resource public access URL
 def resource_public_access_duration():
-    startObj = dt.now() 
-    # silently fails if 6 hours or less 
-    # change = timedelta(minutes=17) 
-    change = timedelta(minutes=361) 
+    startObj = dt.now()
+    # silently fails if 6 hours or less
+    # change = timedelta(minutes=17)
+    change = timedelta(minutes=361)
     endObj = startObj + change
     return f"{startObj.strftime('%m-%d-%Y %H:%M')} - {endObj.strftime('%m-%d-%Y %H:%M')}"
 
@@ -198,9 +200,10 @@ def resource_public_access_download_media(session, url, server, id, path):
 
         logging.info(f"Type: {kind.mime}")
         logging.info(f"Stored: {local_file_path}")
-        #aviaryUtilities.download_file(session, url, filename, headers=headers)
-        #logging.info(f"Download response headers: {response.headers}")
-        #logging.info(f"Download request headers: {response.request.headers}")
+        # aviaryUtilities.download_file(session, url, filename, headers=headers)
+        # logging.info(f"Download response headers: {response.headers}")
+        # logging.info(f"Download request headers: {response.request.headers}")
+
 
 def resource_public_access_delete(session, server, resource_id, duration):
     # get CSRF token (HTTP GET)
@@ -235,8 +238,8 @@ def resource_public_access_delete(session, server, resource_id, duration):
         # <a class="btn-sm btn-danger access-delete ml-1" data-id="4834" href="javascript://">Delete</a>
         # <a class="btn-sm btn-default access-view-resource ml-1" data-id="4834" href="/collections/1797/collection_resources/96596">View Resource</a>
         button_html = item[10]
-        # test if found correct: duration in item doesn't have "-" 
-        if ( f"/collection_resources/{resource_id}\"" in button_html) and item[3] == duration.replace(" - ", " "):
+        # test if found correct: duration in item doesn't have "-"
+        if (f"/collection_resources/{resource_id}\"" in button_html) and item[3] == duration.replace(" - ", " "):
             logging.info(f"Contains id[{id}]: {item[10]}")
             match = re.search(r" data-id=\"(\d+)\"", button_html)
             if match:
@@ -253,9 +256,3 @@ def resource_public_access_delete(session, server, resource_id, duration):
         logging.info(f"Remove: {url} {params}")
         response = session.get(url, params=params)
         logging.info(f"Remove: {response}")
-
-
-
-
-
-
