@@ -125,6 +125,21 @@ def process(args, session, headers=""):
         text = input("SANDBOX item only!!! Code modifies permissions. Continue (Y/n)?")
         if (text == "Y"):
             download_media(session, args)
+    elif args.type == 's_json':
+        item = aviaryApi.get_supplemental_files_item(args, session, args.id)
+        print(item)
+    elif args.type == 't_json':
+        item = aviaryApi.get_transcripts_item(args, session, args.id)
+        print(item)
+    elif args.type == 'i_json':
+        item = aviaryApi.get_indexes_item(args, session, args.id)
+        print(item)
+    elif args.type == 'm_json':
+        item = aviaryApi.get_media_item(args, session, args.id)
+        print(item)
+    elif args.type == 'r_json':
+        item = aviaryApi.get_resource_item(args, session, args.id)
+        print(item)
 
 
 #

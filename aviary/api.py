@@ -208,14 +208,20 @@ def get_transcripts_item(args, session, id):
 
 
 # A GET is not supported as of 2023-05-26; see https://www.aviaryplatform.com/api/v1/documentation#Indexes
+# The following is a workaround - id is the media id as the media APi includes the index json
 def get_indexes_item(args, session, id):
-    response = session.get(
-        urljoin(args.server, 'api/v1/indexes/' + str(id))
-    )
-    logging.info(f"{response.request.url}")
+    # response = session.get(
+    #    urljoin(args.server, 'api/v1/indexes/' + str(id))
+    # )
+    # logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
-
+    media = get_media_item(args, session, id)
+    media_json = json.loads(media)
+    if ('data' in media_json):
+        return media_json['data']['indexes']
+    else:
+        logging.error(f"media id:[{id}] - {media_json}")
 
 #
 def get_supplemental_files_item(args, session, id):
