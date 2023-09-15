@@ -13,6 +13,8 @@ from urllib.parse import urljoin
 
 from aviary import utilities as aviaryUtilities
 
+# Aviary UI fails with the Python Requests default user-agent header
+_default_header =  { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.76' }
 
 def get_auth_from_file(args):
     # copy the cookie from an authenticated Aviary Web UI session (via the browser dev tools -> network --> request --> cookie)
@@ -45,6 +47,7 @@ def build_session_header(args, token, url_path, session):
 # Auth via the Web UI username/password form and subsequent two-factor authentication form
 def init_session(args, username, password, otp_attempt):
     session = requests.Session()
+    session.headers = _default_header
     response = session.get(args.server)
     logging.info(f"URL: {response.request.url}")
     logging.info(f"Status: {response.status_code}")
