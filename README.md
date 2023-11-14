@@ -33,7 +33,7 @@ A SaaS vendor audio/video repository solution. Terminology:
 
 **Note:** pagination is not documented (as of 2023-05-29) so workarounds are needed for collections with more than 100 resources (e.g., use Web UI export to gain a list of IDs)
 
-**Note:** as of 2023-06-29, a resource returned by the Aviary API lists the attached media item(s) in the `media_file_id` field. However, `media_ife_id` only contains a maximum of 10 IDs (a significant number of resources have over 10 media attached). I also tried via the Web UI, "export Media Files(s) to CSV" but the resulting file doesn't contain media IDs. How to get the entire list of media items is unknown.
+**Note:** as of 2023-06-29, a resource returned by the Aviary API lists the attached media item(s) in the `media_file_id` field. However, `media_file_id` only contains a maximum of 10 IDs (a significant number of resources have over 10 media attached). I also tried via the Web UI, "export Media Files(s) to CSV" but the resulting file doesn't contain media IDs. How to get the entire list of media items is unknown.
 
 ## Included Scripts
 
@@ -91,6 +91,10 @@ python3 experimental/aviary_api_report_resources_csv.py --server ${aviary_server
 ```
 
 For a JSON-like output (more for debugging)
+
+[JSON](./json/)
+
+Or
 
 ``` bash
 python3 experimental/aviary_api_report_resources_json.py --server ${aviary_server_name} --output ${output_path}
@@ -156,6 +160,8 @@ Note: `experiemental/aviary_api_report_transcripts_csv_by_list.py` uses the reso
 python3 aviary_api_report_index_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
+Or [JSON](./json/)
+
 **Note:** the resource API response, when the `media files count` is >10, the `media file IDs` will display only a maximum of 10 IDs in the list (as of May 2023). An example is resource 58924
 
 Todo: alter to remove the need for an input file of ID once pagination is available and replace with `/api/v1/collections` and `/api/v1/collections/{:collection_id}/resources` to build a list of media.
@@ -208,7 +214,7 @@ ffmpeg -f concat -safe 0 -i ffmpeg_concat.txt -c copy 3g.mp4
 To check style:
 
 ``` bash
-pycodestyle --show-source --show-pep8 --ignore=E402,W504 --max-line-length=200 . 
+pycodestyle --show-source --show-pep8 --ignore=E402,W504 --max-line-length=200 .
 ```
 
 To run tests:
