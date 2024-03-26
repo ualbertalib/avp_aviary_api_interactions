@@ -50,7 +50,7 @@ def process(args, session, input_csv, output_file):
         except BaseException as e:
             logging.error(f"{e} \n{resource}")
             # add a line to the CSV output with the error
-        sleep(int(args.wait))
+        sleep(args.wait)
         aviaryUtilities.progressIndicator(i, args.logging_level)
     output_file.write(json.dumps(data))
     print(f"\nItems processed: {i + 1}")

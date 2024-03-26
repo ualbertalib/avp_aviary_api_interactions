@@ -1,5 +1,6 @@
 ##############################################################################################
 # desc: connect to the Aviary API and get index item metadata
+
 #       output: JSON
 #       input: CSV from the Aviary web UI media export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
 #       exploratory / proof-of-concept code
