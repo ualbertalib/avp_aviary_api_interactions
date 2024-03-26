@@ -1,6 +1,6 @@
 ##############################################################################################
 # desc: exploratory script to download files attached to Aviary content (audio/video, transcripts, index, and supplemental files)
-#       exploritory / proof-of-concept code
+#       exploratory / proof-of-concept code
 # usage:
 #       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id ${ID} --type ${TYPE}
 #       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id 53122 --type i

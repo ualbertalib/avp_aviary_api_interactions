@@ -1,8 +1,9 @@
 ##############################################################################################
 # desc: connect to the Aviary API and get index item metadata
-#       output: CSV
+
+#       output: JSON
 #       input: CSV from the Aviary web UI media export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
-#       exploritory / proof-of-concept code
+#       exploratory / proof-of-concept code
 # usage: python3 aviary_api_report_index_csv_by_media_list.py \
 #           --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication

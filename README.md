@@ -17,7 +17,7 @@ Assumes Python 3 is installed.
   * `pip install -r requirements.txt --user`
   * Or python3 setup.py install --user
     * installed required modules in a local user account
-  * Or without `--user` to install into the OS's central Python environment (required administrative privleges)
+  * Or without `--user` to install into the OS's central Python environment (required administrative privileges)
 
 ## Aviary
 
@@ -48,6 +48,8 @@ The main types of scripts (the details are in the following subsections):
   * aviary_api_report_supplemental_csv_by_list.py
   * aviary_api_report_transcripts_csv_by_media_list.py
 * Upload a list of media items
+* JSON output (new 2023/2024)
+  * ./json/
 * [Experimental:](./experimental/) working with the Aviary API in different ways including the use of the collection API to find resource lists without needing the Web UI export.
 
 The details:
@@ -130,6 +132,8 @@ Failed: an attempt to the resource CSV export instead of requiring the user to a
 python3 experimental/aviary_api_report_media_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
+Or [JSON](./json/)
+
 #### Transcripts metadata report
 
 For input, use the Web UI resource table option to export. This obtains a list of resource IDs (required due to lack of pagination in the Aviary API as of 2023-05-26).
@@ -160,7 +164,7 @@ Note: `experiemental/aviary_api_report_transcripts_csv_by_list.py` uses the reso
 python3 aviary_api_report_index_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
-Or [JSON](./json/)
+Or [JSON](./json/), either JSON metadata or a index download/export of the WebVTT.
 
 **Note:** the resource API response, when the `media files count` is >10, the `media file IDs` will display only a maximum of 10 IDs in the list (as of May 2023). An example is resource 58924
 
@@ -222,3 +226,39 @@ To run tests:
 ``` bash
 python3 tests/unit_tests.py
 ```
+
+## Spoken Web collection export
+
+Note: uses fragile workarounds as AVP Aviary API does not cover all the required features (e.g., pagination as of March 2024; index API added after Nov 2023).
+
+### SpokenWeb Export Nov. 2023 & Mar. 2024
+
+1. Get the list of resources in the SpokenWeb Collection (ID: 1783)
+   * Workaround as the API doesn't have pagination nor a filter by collection
+   * Export all resources as CSV from the UI resources table: <https://ualberta.aviaryplatform.com/collection_resources>
+     * Verify the "Collection Title" property is enabled in the UI resources table "manage table" otherwise there is no information to determine each resource's collection
+   * Filter the CSV by the "Collection Title" property (verify enabled via the "manage table" list of displayed properties)
+     * `grep 'SpokenWeb UAlberta' delete2/UniversityofAlbertaLibrary_collection_resources_2024-03-25_1711392929.csv`
+     * add back the CSV header
+2. Get the resource metadata (JSON)
+   * `python3 avp_aviary_api_interactions/json/aviary_api_report_resources_json_by_resource_list.py --server 'https://ualberta.aviaryplatform.com/' --output delete2/aviary_collection_1783_resources_2024-03-25.json --input delete2/UniversityofAlbertaLibrary_collection_resources_2024-03-25_1711392929_collection_1783.csv`
+3. Get the media metadata (JSON)
+   * Nov. 2023 approach fails as of March 2024 (unable to export the media CSV from the Aviary UI) - `aviary_api_report_index_json_by_media_list.py`.
+   * Use the 'media_file_id' in the resource JSON output (truncated to 10 media IDs when last tested in 2022)
+   * Check if the media_file_id field in the resource JSON has truncated the ID list at 10 items:
+     * `jq '.[].data.media_file_id | length' delete2/aviary_collection_1783_resources_2024-03-25.json`
+     * `jq '.[1].data' delete2/aviary_collection_1783_resources_2024-03-25.json`
+   * `python3 avp_aviary_api_interactions/json/aviary_api_report_media_by_resource_json.py --server 'https://ualberta.aviaryplatform.com/' --input delete2/aviary_collection_1783_resources_2024-03-25.json --output delete2/aviary_collection_1783_media_2024-03-25.json`
+   * These two should match:
+     * `jq '. | length' delete2/aviary_collection_1783_media_2024-03-25.json`
+     * `jq '.[].data.media_file_id[]' delete2/aviary_collection_1783_resources_2024-03-25.json | wc -l`
+4. Get the index metadata
+   * `python3 avp_aviary_api_interactions/json/aviary_api_report_index_by_media_json.py --server 'https://ualberta.aviaryplatform.com/' --input delete2/aviary_collection_1783_media_2024-03-25.json --output delete2/aviary_collection_1783_index_2024-03-25.json`
+   * These two should match
+     * `jq '.[].data.indexes[].id' delete2/aviary_collection_1783_media_2024-03-25.json | wc -l`
+     * `jq '. | length' delete2/aviary_collection_1783_index_2024-03-25.json`
+5. Download index files
+   * using the same script as of November 2023
+     * `python3 avp_aviary_api_interactions/experimental/experimental_test_batch_download.py --server 'https://ualberta.aviaryplatform.com/' --input_file delete2/index_id_list_2024-03-25.csv --output_path delete2/index_file_export/ --type i --wait 10`
+   * using the new API index endpoint as of March 2024
+     * `python3 avp_aviary_api_interactions/json/aviary_api_download_index_by_index_json.py --server 'https://ualberta.aviaryplatform.com/' --input delete2/aviary_collection_1783_index_2024-03-25.json --output delete2/index_file_export__new_api_march_2024 --wait 5`
