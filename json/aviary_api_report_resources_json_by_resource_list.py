@@ -1,8 +1,8 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get media item metadata
+# desc: connect to the Aviary API and get resource item metadata
 #       output: JSON
 #       input: CSV from the Aviary web UI resource export (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
-#       exploritory / proof-of-concept code
+#       exploratory / proof-of-concept code
 # usage: python3 aviary_api_report_resources_json_by_resource_list.py \
 #           --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
@@ -50,7 +50,7 @@ def process(args, session, input_csv, output_file):
         except BaseException as e:
             logging.error(f"{e} \n{resource}")
             # add a line to the CSV output with the error
-        sleep(args.wait)
+        sleep(int(args.wait))
         aviaryUtilities.progressIndicator(i, args.logging_level)
     output_file.write(json.dumps(data))
     print(f"\nItems processed: {i + 1}")

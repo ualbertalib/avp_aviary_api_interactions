@@ -1,12 +1,12 @@
 ##############################################################################################
 # desc: connect to the Aviary API and get media item metadata
 #       output: JSON
-#       input: JSON from the aviary_api_report_media_by_resource_json.py (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
+#       input: Resource JSON from the aviary_api_report_resources_json_by_resource_list.py (API limits number of results from the collection resource listing API call with no pagination information 2023-03-27)
 #       exploratory / proof-of-concept code
-# usage: python3 aviary_api_report_media_by_resource_json.py.py \
+# usage: python3 aviary_api_report_media_by_resource_json.py \
 #           --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
-# date: Nov, 2023
+# date: March, 2024
 ##############################################################################################
 
 # Proof-of-concept only
@@ -54,7 +54,7 @@ def process(args, session, input_json, output_file):
                 # add a line to the CSV output with the error
             if j >= 10:
                 logging.warning(f"Check number of media files - this workaround may miss items as 'media_file_id' property may limit to only 10.\n{item}")
-            sleep(args.wait)
+            sleep(iint(args.wait))
         aviaryUtilities.progressIndicator(i, args.logging_level)
     output_file.write(json.dumps(data))
     print(f"\nItems processed: {i + 1}")
