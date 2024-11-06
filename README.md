@@ -37,6 +37,15 @@ A SaaS vendor audio/video repository solution. Terminology:
 
 **Note:** as of 2023-06-29, a resource returned by the Aviary API lists the attached media item(s) in the `media_file_id` field. However, `media_file_id` only contains a maximum of 10 IDs (a significant number of resources have over 10 media attached). I also tried via the Web UI, "export Media Files(s) to CSV" but the resulting file doesn't contain media IDs. How to get the entire list of media items is unknown.
 
+**Notes:** 2024-10-06
+
+* Pagination: to be added to documentation on Monday
+* Media associated with a Resource: limited to 10: bug fix Monday
+* Fields available in UI and CVS export not available via the API: bug fix Monday
+* Downloading file marked as "not downloadable": recommendation - use the make downloadable for period of time option and download. Sean: about 9 items, SILR that should be excluded from this approach
+* Rate limiting: not currently imposing a specific rate, recommendation exponential back-off if error ( (no present requirement to use a rate limiter on the client side e.g., leaky bucket algorithm).
+
+
 ## Included Scripts
 
 The main types of scripts (the details are in the following subsections):
