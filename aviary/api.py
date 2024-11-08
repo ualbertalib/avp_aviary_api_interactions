@@ -207,6 +207,7 @@ def get_transcripts_item(args, session, id):
     return response.content
 
 
+# Deprecated: 2024-03-25
 # The HTTP GET request is not supported as of 2023-05-26; see https://www.aviaryplatform.com/api/v1/documentation#Indexes
 # The following is a workaround - id is the media id as the media APi includes the index json
 def get_indexes_item(args, session, id):

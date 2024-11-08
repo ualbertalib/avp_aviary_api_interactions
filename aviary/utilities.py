@@ -271,7 +271,7 @@ def progressIndicator(i, logging_level):
         print(f"{i}.", end="", flush=True)
 
 
-# download a file via steam & and chunks
+# download a file via stream & chunks
 def download_file(session, url, filename='tmp', path="/tmp/", headers=""):
     logging.info(f"Download URL: {url}")
     local_file_path = path + '/' + filename
