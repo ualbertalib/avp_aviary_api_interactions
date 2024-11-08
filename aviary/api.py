@@ -23,6 +23,13 @@ import traceback
 CHUNK_SIZE = 90000000
 
 
+class MissingEnvironmentVariable(Exception):
+    def __init__(self, variable_name):
+        self.variable_name = variable_name
+        self.message = f"The environment variable '{self.variable_name}' is missing."
+        super().__init__(self.message)
+
+
 # initialize a session with API endpoint
 def init_session(args, username, password):
 
@@ -49,15 +56,43 @@ def init_session(args, username, password):
     session.headers.update(auth)
     return session
 
+# initialize a session with API endpoint
+def init_session_api_key(args):
+
+    if 'AVIARY_API_KEY' not in os.environ:
+        raise MissingEnvironmentVariable('AVIARY_API_KEY')
+
+    session = requests.Session()
+    auth_endpoint = 'api/v1/auth/sign_in'
+
+    response = session.post(
+        urljoin(args.server, auth_endpoint),
+        headers={'Content-Type': 'application/json', 'Authorization': os.getenv('AVIARY_API_KEY')}
+    )
+    response.raise_for_status()
+
+    # aviary headers for auth:
+    # assumes first org in the list and user only belongs to one org
+    # https://www.aviaryplatform.com/api/v1/documentation#jump-Authorization-Authorization_3A_2Fapi_2Fv1_2Fauth_2Fsignin
+    auth = {
+        'Authorization': os.getenv('AVIARY_API_KEY'),
+        'organization-id': f"{response.json()['data']['organizations'][0]['id']}"
+    }
+    session.headers.update(auth)
+    return session
+
 
 #
-def get_collection_list(args, session):
+def get_collection_list(args, session, page_number=0):
+    query_string = f"?page_number={page_number}"
+    print(query_string)
     response = session.get(
-        urljoin(args.server, 'api/v1/collections')
+        urljoin(args.server, 'api/v1/collections', query_string)
     )
     logging.info(f"{response.request.url}")
     logging.debug(response.__dict__)
     # print(response.content)
+    response.raise_for_status()
     return response.content
 
 
