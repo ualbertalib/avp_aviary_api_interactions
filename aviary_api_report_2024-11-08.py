@@ -27,67 +27,196 @@ AVIARY_PAGE_SIZE=100
 #
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--server', required=True, help='Servername.')
+    parser.add_argument('--server', required=True, help='Server name.')
     parser.add_argument('--output_dir', required=True, help='Directory to store output.')
     parser.add_argument('--collection', required=False, help='Limit to a given collection.')
     parser.add_argument('--resource', required=False, help='Limit to a given resource.')
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', type=float, default=0.1)
-    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
+    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARN)
     return parser.parse_args()
 
 #
 def is_next_page():
     return True
 
-#
-def process_2(args, session, output_file):
-
-    collections = aviaryApi.get_collection_list(args, session)
-    collection_list = json.loads(collections)
-    for collection in collection_list['data']:
-        print(f"Collection: {collection['id']}")
-        resources = aviaryApi.get_collection_resources(args, session, collection['id'])
-        # resources = aviaryApi.get_collection_resources(args, session, 2226)
-        # resources = aviaryApi.get_collection_resources(args, session, 1787)
-        resource_list = json.loads(resources)
-        for i, resource in enumerate(resource_list['data']):
-            if ('resource_id' in resource):
-                item = aviaryApi.get_resource_item(args, session, resource['resource_id'])
-                output_file.write(json.dumps(json.loads(item)))
-                output_file.write("\n")
-            else:
-                output_file.write(json.dumps(resource))
-                output_file.write("\n")
-                print(resource)  # error
-            sleep(args.wait)
-            aviaryUtilities.progressIndicator(i, args.logging_level)
-        print(f"\nResource count: {i + 1}")
-    print("Test only - pagination FAILS 2023 April due to no upstream documentation on how to paginate")
 
 #
-def process(args, session):
-    page_number=0
+def process_supplemental_files(args, session, path, supplemental_list):
+    count=0
+    for id in supplemental_list:
+        supplemental_str = aviaryApi.get_supplemental_files_item(args, session, id)
+        supplemental = json.loads(supplemental_str)
+        path_supplemental = os.path.join(path, 'supplemental', str(id))
+        output_generic(path_supplemental, supplemental, id)
+        count += 1
+    if count > 1:
+        logging.warning(f"Check: supplementals count: [{count}] - 'supplemental' property .\n{supplemental}")
+
+
+#
+def process_transcripts(args, session, path, transcript_list):
+    count=0
+    for item in transcript_list:
+        id = item['id']
+        transcript_str = aviaryApi.get_transcripts_item(args, session, id)
+        transcript = json.loads(transcript_str)
+        path_transcript = os.path.join(path, 'transcript', str(id))
+        output_generic(path_transcript, transcript, id)
+        count += 1
+    if count > 1:
+        logging.warning(f"Check: transcripts count: [{count}] - 'transcripts' property .\n{transcript}")
+
+
+#
+def process_indexes(args, session, path, indexes_list):
+    count=0
+    for item in indexes_list:
+        # extract ID from a json array
+        id = item['id']
+        indexes_str = aviaryApi.get_indexes_item_v2(args, session, id)
+        indexes = json.loads(indexes_str)
+        path_transcript = os.path.join(path, 'indexes', str(id))
+        output_generic(path_transcript, indexes, id)
+        count += 1
+    if count > 1:
+        logging.warning(f"Check: indexes count: [{count}] - 'indexes' property .\n{indexes}")
+
+
+#
+def process_media_by_resource(args, session, path, item):
+    count=0
+    for id in item['media_file_id']:
+        media_str = aviaryApi.get_media_item(args, session, id)
+        media = json.loads(media_str)
+        #logging.warning(f"id: {id} \n    {item} \n    {media}")
+        path_media = os.path.join(path, 'media', f"{str(id)}")
+        output_generic(path_media, media, id)
+        process_transcripts(args, session, path, media['data']['transcripts'])
+        process_indexes(args, session, path, media['data']['indexes'])
+        #process_supplemental_files(args, session, path, ["4778"])
+        count += 1
+    if count > 10:
+        logging.warning(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
+        logging.info(f"Media count {count}")
+    if count < item['media_files_count']:
+        logging.warning(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - count 'media_file_id' <> 'media_files_count .\n{item}")
+
+
+# build collection directory from specified path and ID and store collection metadata in a file named after the ID
+def output_generic(path, item, id):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    file_path = os.path.join(path, f"{id}.json")
+    with open(file_path, 'w') as file:
+        logging.info(file_path)
+        json.dump(item, file, indent=4)
+
+#
+def process_resource(args, session, collection_path, id):
+    path = os.path.join(collection_path, 'resources', str(id))
+    logging.info(f"Path: {path}")
+    resource_str = aviaryApi.get_resource_item(args, session, id)
+    resource = json.loads(resource_str)
+    output_generic(path, resource, id)
+    process_media_by_resource(args, session, path, resource['data'])
+
+
+#
+def process_resources_by_collection(args, session, collection_path, collection_id):
+    page_number=1
+    page_next=True
     # add test if page_number doesn't work to prevent infinite looping
-    first_collection_id_of_page=0
-    while True:
+    first_id_of_page=0
+    while page_next:
         try:
-            collections = aviaryApi.get_collection_list(args, session, page_number)
-            collection_list = json.loads(collections)
-            for collection in collection_list['data']:
-                print(f"Collection: {collection['id']} page: {page_number}")
-            time.sleep(2)
+            resources = aviaryApi.get_collection_resources(args, session, collection_id, page_number)
+            resource_list = json.loads(resources)
+
+            for index, item in enumerate(resource_list['data']):
+                #print(f"Collection: {collection['id']} page: {page_number}")
+                # Test if the first id of the current page is the same id of last page
+                #   if true pagination failed; break out of process
+                if (index == 0):
+                    if (first_id_of_page == item['resource_id']):
+                        print(f"Pagination failed to move to the next page current {item['resource_id']} first {first_id_of_page} current page: {page_number}")
+                        page_next = False 
+                        break
+                    else:
+                        first_id_of_page = item['resource_id']
+                        print(f"Pagination {item['resource_id']} first {first_id_of_page} current page: {page_number}")
+                #path = os.path.join(collection_path, 'resources', f"{str(item['resource_id'])}")
+                #logging.info(f"Path: {path}")
+                #output_generic(path, item, str(item['resource_id']))
+                #process_media_by_resource(args, session, path, item)
+                process_resource(args, session, collection_path, item['resource_id'])
+            print(f"Count resources: {index+1}")
+            if AVIARY_PAGE_SIZE > (index+1):
+                page_next = False 
+            else:
+                time.sleep(args.wait)
         except Exception as e:
             print(f"{e}")
             traceback.print_exc()
             break;
         else:
             page_number+=1
+
+
+# Todo: setup pagination as decorator? 
+def process_collection(args, session):
+    page_number=1
+    page_next=True
+    # add test if page_number doesn't work to prevent infinite looping
+    first_collection_id_of_page=0
+    while page_next:
+        try:
+            if (args.collection):
+                # a single collection therefore no next page
+                collection_list = { "data": [ {"id": f"{args.collection}"} ] } 
+                page_next = False
+            else:
+                collections = aviaryApi.get_collection_list(args, session, page_number)
+                collection_list = json.loads(collections)
+            for index, collection in enumerate(collection_list['data']):
+                print(f"Collection: {collection} page: {page_number}")
+                # Test if the first id of the current page is the same id of last page
+                #   if true pagination failed; break out of process
+                if (index == 0):
+                    if (first_collection_id_of_page == collection['id']):
+                        print(f"Pagination failed to move to the next page current {collection['id']} first {first_collection_id_of_page} current page: {page_number}")
+                        page_next = False 
+                        break
+                    else:
+                        first_collection_id_of_page = collection['id']
+                path = os.path.join(args.output_dir, f"{str(collection['id'])}")
+                output_generic(path, collection, str(collection['id']))
+                process_resources_by_collection(args, session, path, collection['id'])
+            print(f"Count collections {index+1}")
+            if AVIARY_PAGE_SIZE > (index+1):
+                page_next = False 
+            else:
+                time.sleep(args.wait)
+        except Exception as e:
+            print(f"{e}")
+            traceback.print_exc()
             break;
-        
+        else:
+            page_number+=1
+
+
+#        
+def process(args, session):
+    if args.resource:
+        process_resource(args, session, args.output_dir, args.resource)
+    else: 
+        process_collection(args, session)
 
 #
 def main():
+
     args = parse_args()
+
+    logging.basicConfig(level=args.logging_level)
 
     session = aviaryApi.init_session_api_key(args)
 

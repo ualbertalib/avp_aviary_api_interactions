@@ -83,11 +83,10 @@ def init_session_api_key(args):
 
 
 #
-def get_collection_list(args, session, page_number=0):
+def get_collection_list(args, session, page_number=1):
     query_string = f"?page_number={page_number}"
-    print(query_string)
     response = session.get(
-        urljoin(args.server, 'api/v1/collections', query_string)
+        urljoin(args.server, 'api/v1/collections' + query_string)
     )
     logging.info(f"{response.request.url}")
     logging.debug(response.__dict__)
@@ -97,13 +96,29 @@ def get_collection_list(args, session, page_number=0):
 
 
 #
-def get_collection_resources(args, session, id):
+def get_collection_metadata(args, session, id):
     response = session.get(
-        urljoin(args.server, 'api/v1/collections/' + str(id) + '/resources')
+        urljoin(args.server, 'api/v1/collections/' + id + "/metadata")
     )
     logging.info(f"{response.request.url}")
     logging.debug(response.__dict__)
     # print(response.content)
+    response.raise_for_status()
+    return response.content
+
+
+
+# https://www.aviaryplatform.com/api/v1/documentation
+# Page numbers start at 1 (not 0) and max page size is 100
+def get_collection_resources(args, session, id, page_number=1, page_size=100):
+    query_string = f"?page_number={page_number}&page_size={page_size}"
+    response = session.get(
+        urljoin(args.server, 'api/v1/collections/' + str(id) + '/resources'+ query_string)
+    )
+    logging.info(f"{response.request.url}")
+    logging.debug(response.__dict__)
+    # print(response.content)
+    response.raise_for_status()
     return response.content
 
 
@@ -115,6 +130,7 @@ def get_resource_item(args, session, id):
     logging.info(f"{response.request.url}")
     logging.debug(response.__dict__)
     # print(response.content)
+    response.raise_for_status()
     return response.content
 
 
@@ -126,6 +142,7 @@ def get_media_item(args, session, id):
     logging.info(f"{response.request.url}")
     logging.debug(response.__dict__)
     # logging.debug(response.content)
+    response.raise_for_status()
     return response.content
 
 
@@ -239,6 +256,7 @@ def get_transcripts_item(args, session, id):
     logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
+    response.raise_for_status()
     return response.content
 
 
@@ -267,6 +285,7 @@ def get_indexes_item_v2(args, session, id):
     logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
+    response.raise_for_status()
     return response.content
 
 #
@@ -277,4 +296,5 @@ def get_supplemental_files_item(args, session, id):
     logging.info(f"{response.request.url}")
     # print(response.__dict__)
     # print(response.content)
+    response.raise_for_status()
     return response.content
