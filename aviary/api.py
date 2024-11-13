@@ -98,8 +98,8 @@ def init_session_api_key(args):
 
 
 #
-def get_collection_list(args, session, page_number=1):
-    query_string = f"?page_number={page_number}"
+def get_collection_list(args, session, page_number=1, page_size=10):
+    query_string = f"?page_number={page_number}&page_size={page_size}"
     response = session.get(
         urljoin(args.server, 'api/v1/collections' + query_string)
     )
