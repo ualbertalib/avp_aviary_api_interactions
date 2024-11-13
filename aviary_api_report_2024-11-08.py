@@ -35,10 +35,6 @@ def parse_args():
     parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARN)
     return parser.parse_args()
 
-#
-def is_next_page():
-    return True
-
 
 #
 def process_supplemental_files(args, session, path, supplemental_list):

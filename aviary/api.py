@@ -7,7 +7,8 @@ this module implements the AVP Aviary API client.
 """
 
 from urllib.parse import urljoin
-import requests
+from requests.adapters import HTTPAdapter, Retry
+
 import datetime
 import json
 import logging
@@ -56,13 +57,27 @@ def init_session(args, username, password):
     session.headers.update(auth)
     return session
 
+
 # initialize a session with API endpoint
 def init_session_api_key(args):
+
+    retry_strategy = Retry(
+        total=5,
+        backoff_factor=1, # Time between retries will be 2^(retry count) * backoff_factor status
+        status_forcelist=[429, 500, 502, 503, 504], # Retry on these status codes
+        #allowed_methods=["HEAD", "GET", "OPTIONS"] # Methods to retry
+    )
+
+    adapter = HTTPAdapter(max_retries=retry_strategy)
 
     if 'AVIARY_API_KEY' not in os.environ:
         raise MissingEnvironmentVariable('AVIARY_API_KEY')
 
     session = requests.Session()
+    
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+
     auth_endpoint = 'api/v1/auth/sign_in'
 
     response = session.post(
