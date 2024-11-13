@@ -91,8 +91,6 @@ def process_media_by_resource(args, session, path, item):
         process_transcripts(args, session, path_media, media['data']['transcripts'])
         # index attached to media
         process_indexes(args, session, path_media, media['data']['indexes'])
-        # supplemental file attached to resource 
-        process_supplemental_files(args, session, path, item['supplemental_id'])
         count += 1
     if count > 10:
         logging.debug(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
@@ -118,6 +116,8 @@ def process_resource(args, session, collection_path, id):
     resource = json.loads(resource_str)
     output_generic(path, resource, id)
     process_media_by_resource(args, session, path, resource['data'])
+    # supplemental file attached to resource 
+    process_supplemental_files(args, session, path, resource['data']['supplemental_id'])
 
 
 #
