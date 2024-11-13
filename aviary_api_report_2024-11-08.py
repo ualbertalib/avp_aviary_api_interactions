@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument('--collection', required=False, help='Limit to a given collection.')
     parser.add_argument('--resource', required=False, help='Limit to a given resource.')
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', type=float, default=0.1)
-    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.INFO)
+    parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARN)
     return parser.parse_args()
 
 
@@ -84,7 +84,7 @@ def process_media_by_resource(args, session, path, item):
     for id in item['media_file_id']:
         media_str = aviaryApi.get_media_item(args, session, id)
         media = json.loads(media_str)
-        #logging.warning(f"id: {id} \n    {item} \n    {media}")
+        logging.debug(f"id: {id} \n    {item} \n    {media}")
         path_media = os.path.join(path, 'media', f"{str(id)}")
         output_generic(path_media, media, id)
         # transcript attached to media
@@ -143,8 +143,7 @@ def process_resources_by_collection(args, session, collection_path, collection_i
                         first_id_of_page = item['resource_id']
                         logging.info(f"Pagination {item['resource_id']} first {first_id_of_page} current page: {page_number}")
                 process_resource(args, session, collection_path, item['resource_id'])
-                process_media_by_resource(args, session, path, item)
-            logging.info(f"Count resources: {index+1}")
+            print(f"Count resources: {index+1}")
             if AVIARY_PAGE_SIZE > (index+1):
                 page_next = False 
             else:
@@ -173,7 +172,7 @@ def process_collection(args, session):
                 collections = aviaryApi.get_collection_list(args, session, page_number)
                 collection_list = json.loads(collections)
             for index, collection in enumerate(collection_list['data']):
-                logging.info(f"Collection: {collection['id']} Title: {collection['title']} Page: {page_number}")
+                print(f"Collection: {collection['id']} Title: {collection['title']} Page: {page_number}")
                 # Test if the first id of the current page is the same id of last page
                 #   if true pagination failed; break out of process
                 if (index == 0):
@@ -185,8 +184,8 @@ def process_collection(args, session):
                         first_collection_id_of_page = collection['id']
                 path = os.path.join(args.output_dir, f"{str(collection['id'])}")
                 output_generic(path, collection, str(collection['id']))
-                #process_resources_by_collection(args, session, path, collection['id'])
-            logging.info(f"Count collections {index+1}")
+                process_resources_by_collection(args, session, path, collection['id'])
+            print(f"Count collections {index+1}")
             if AVIARY_PAGE_SIZE > (index+1):
                 page_next = False 
             else:
