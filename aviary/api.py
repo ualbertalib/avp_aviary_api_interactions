@@ -152,7 +152,7 @@ def put_media_item(args, session, item):
     content_size = os.stat(item['filepath']).st_size
     url = urljoin(args.server, 'api/v1/media_files'),
     index = 0
-    offet = 0
+    offset = 0
 
     print(f"Uploading: [{item['filepath']}] with size [{content_size}]")
 

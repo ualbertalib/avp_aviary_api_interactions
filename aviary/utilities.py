@@ -2,7 +2,7 @@
 aviary.utilities
 ~~~~~~~~~~
 
-This module implements some cenvenience utilites.
+This module implements some convenience utilities.
 
 """
 
