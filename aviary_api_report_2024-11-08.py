@@ -50,7 +50,7 @@ def process_supplemental_files(args, session, path, supplemental_list):
         output_generic(path_supplemental, supplemental, id)
         count += 1
     if count > 1:
-        logging.warning(f"Check: supplementals count: [{count}] - 'supplemental' property .\n{supplemental}")
+        logging.warning(f"Check: supplementals count: [{count}] - 'supplemental' property {path} {supplemental_list}")
 
 
 #
@@ -64,7 +64,7 @@ def process_transcripts(args, session, path, transcript_list):
         output_generic(path_transcript, transcript, id)
         count += 1
     if count > 1:
-        logging.warning(f"Check: transcripts count: [{count}] - 'transcripts' property .\n{transcript}")
+        logging.warning(f"Check: transcripts count: [{count}] - 'transcripts' property {path} {transcript_list}")
 
 
 #
@@ -79,7 +79,7 @@ def process_indexes(args, session, path, indexes_list):
         output_generic(path_transcript, indexes, id)
         count += 1
     if count > 1:
-        logging.warning(f"Check: indexes count: [{count}] - 'indexes' property .\n{indexes}")
+        logging.warning(f"Check: indexes count: [{count}] - 'indexes' property {path} {indexes_list}")
 
 
 #
@@ -92,14 +92,14 @@ def process_media_by_resource(args, session, path, item):
         path_media = os.path.join(path, 'media', f"{str(id)}")
         output_generic(path_media, media, id)
         # transcript attached to media
-        process_transcripts(args, session, path, media['data']['transcripts'])
+        process_transcripts(args, session, path_media, media['data']['transcripts'])
         # index attached to media
-        process_indexes(args, session, path, media['data']['indexes'])
+        process_indexes(args, session, path_media, media['data']['indexes'])
         # supplemental file attached to resource 
         process_supplemental_files(args, session, path, item['supplemental_id'])
         count += 1
     if count > 10:
-        logging.warning(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
+        logging.info(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
         logging.info(f"Media count {count}")
     if count < item['media_files_count']:
         logging.warning(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - count 'media_file_id' <> 'media_files_count .\n{item}")
@@ -116,7 +116,7 @@ def output_generic(path, item, id):
 
 #
 def process_resource(args, session, collection_path, id):
-    path = os.path.join(collection_path, 'resources', str(id))
+    path = os.path.join(collection_path, 'collection_resources', str(id))
     logging.info(f"Path: {path}")
     resource_str = aviaryApi.get_resource_item(args, session, id)
     resource = json.loads(resource_str)
