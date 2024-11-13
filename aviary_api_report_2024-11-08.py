@@ -91,9 +91,12 @@ def process_media_by_resource(args, session, path, item):
         #logging.warning(f"id: {id} \n    {item} \n    {media}")
         path_media = os.path.join(path, 'media', f"{str(id)}")
         output_generic(path_media, media, id)
+        # transcript attached to media
         process_transcripts(args, session, path, media['data']['transcripts'])
+        # index attached to media
         process_indexes(args, session, path, media['data']['indexes'])
-        #process_supplemental_files(args, session, path, ["4778"])
+        # supplemental file attached to resource 
+        process_supplemental_files(args, session, path, item['supplemental_id'])
         count += 1
     if count > 10:
         logging.warning(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
