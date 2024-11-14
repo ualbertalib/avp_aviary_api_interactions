@@ -8,6 +8,7 @@ This module implements some convenience utilities.
 
 import json
 import logging
+import os
 
 _resource_csv_fieldnames = [
     "Resource ID",
@@ -274,7 +275,7 @@ def progressIndicator(i, logging_level):
 # download a file via stream & chunks
 def download_file(session, url, filename='tmp', path="/tmp/", headers=""):
     logging.info(f"Download URL: {url}")
-    local_file_path = path + '/' + filename
+    local_file_path = os.path.join(path, filename)
     with session.get(url, stream=True, headers=headers) as response:
         logging.info(f"Status: {response.status_code} Response URL: {response.request.url}")
         response.raise_for_status()

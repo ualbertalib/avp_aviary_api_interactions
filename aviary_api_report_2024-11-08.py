@@ -47,7 +47,7 @@ def process_supplemental_files(args, session, path, supplemental_list):
         aviaryApi.download_supplemental(session, supplemental, path_supplemental)
         count += 1
     if count > 1:
-        logging.warning(f"Check: supplementals count: [{count}] - 'supplemental' property {path} {supplemental_list}")
+        logging.debug(f"Check: supplementals count: [{count}] - 'supplemental' property {path} {supplemental_list}")
 
 
 #
@@ -62,7 +62,7 @@ def process_transcripts(args, session, path, transcript_list):
         aviaryApi.download_transcript(session, transcript, path_transcript)
         count += 1
     if count > 1:
-        logging.warning(f"Check: transcripts count: [{count}] - 'transcripts' property {path} {transcript_list}")
+        logging.debug(f"Check: transcripts count: [{count}] - 'transcripts' property {path} {transcript_list}")
 
 
 #
@@ -78,7 +78,7 @@ def process_indexes(args, session, path, indexes_list):
         aviaryApi.download_indexes_item(session, indexes, path_indexes)
         count += 1
     if count > 1:
-        logging.warning(f"Check: indexes count: [{count}] - 'indexes' property {path} {indexes_list}")
+        logging.debug(f"Check: indexes count: [{count}] - 'indexes' property {path} {indexes_list}")
 
 
 #
@@ -143,7 +143,10 @@ def process_resources_by_collection(args, session, collection_path, collection_i
                 # Test if the first id of the current page is the same id of last page
                 #   if true pagination failed; break out of process
                 if (index == 0):
-                    if (first_id_of_page == item['resource_id']):
+                    if ('errors' in item):
+                        logging.error(f"Pagination failed {item}")
+                        break
+                    elif (first_id_of_page == item['resource_id']):
                         logging.error(f"Pagination failed to move to the next page current {item['resource_id']} first {first_id_of_page} current page: {page_number}")
                         page_next = False 
                         break
@@ -159,7 +162,6 @@ def process_resources_by_collection(args, session, collection_path, collection_i
         except Exception as e:
             logging.error(f"{e}")
             traceback.print_exc()
-            # break;
         else:
             page_number+=1
 
@@ -201,7 +203,6 @@ def process_collection(args, session):
         except Exception as e:
             logging.error(f"{e}")
             traceback.print_exc()
-            break;
         else:
             page_number+=1
 
