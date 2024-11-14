@@ -1,8 +1,6 @@
 # AVP Aviary API Interactions
 
-The repository contains quickly written scripts designed to interact with the [AVP Aviary](https://www.aviaryplatform.com/api/v1/documentation) audio/video repository software. These scripts, as of March 2023 are only proof-of-concept.
-
-Note: March 2024 - the [./json](./json/) directory contains the more recently used scripts (for the SpokenWeb export).
+The repository contains quickly written scripts designed to interact with the [AVP Aviary](https://www.aviaryplatform.com/api/v1/documentation) audio/video repository software. These scripts, as of Nov 2024 are only proof-of-concept.
 
 ## Requirements
 
@@ -63,6 +61,8 @@ python3 tests/unit_tests.py
 ```
 
 ## Older notes from before Oct 2024
+
+Note: March 2024 - the [./json](./json/) directory contains the more recently used scripts (for the SpokenWeb export).
 
 **Notes:** 2024-10-06
 
