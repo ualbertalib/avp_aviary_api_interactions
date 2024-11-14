@@ -44,6 +44,7 @@ def process_supplemental_files(args, session, path, supplemental_list):
         supplemental = json.loads(supplemental_str)
         path_supplemental = os.path.join(path, 'supplemental', str(id))
         output_generic(path_supplemental, supplemental, id)
+        aviaryApi.download_supplemental(session, supplemental, path_supplemental)
         count += 1
     if count > 1:
         logging.warning(f"Check: supplementals count: [{count}] - 'supplemental' property {path} {supplemental_list}")
@@ -58,6 +59,7 @@ def process_transcripts(args, session, path, transcript_list):
         transcript = json.loads(transcript_str)
         path_transcript = os.path.join(path, 'transcript', str(id))
         output_generic(path_transcript, transcript, id)
+        aviaryApi.download_transcript(session, transcript, path_transcript)
         count += 1
     if count > 1:
         logging.warning(f"Check: transcripts count: [{count}] - 'transcripts' property {path} {transcript_list}")
@@ -73,6 +75,7 @@ def process_indexes(args, session, path, indexes_list):
         indexes = json.loads(indexes_str)
         path_transcript = os.path.join(path, 'indexes', str(id))
         output_generic(path_transcript, indexes, id)
+        aviaryApi.download_indexes_item(session, indexes, path_transcript)
         count += 1
     if count > 1:
         logging.warning(f"Check: indexes count: [{count}] - 'indexes' property {path} {indexes_list}")
@@ -81,7 +84,7 @@ def process_indexes(args, session, path, indexes_list):
 #
 def process_media_by_resource(args, session, path, item):
     count=0
-    for id in item['media_file_id']:
+    for id in item['data']['media_file_id']:
         media_str = aviaryApi.get_media_item(args, session, id)
         media = json.loads(media_str)
         logging.debug(f"id: {id} \n    {item} \n    {media}")
@@ -92,10 +95,11 @@ def process_media_by_resource(args, session, path, item):
         # index attached to media
         process_indexes(args, session, path_media, media['data']['indexes'])
         count += 1
+    aviaryUtilities.validateResourceMediaList(item) 
     if count > 10:
         logging.debug(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
         logging.debug(f"Media count {count}")
-    if count < item['media_files_count']:
+    if count < item['data']['media_files_count']:
         logging.error(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - count 'media_file_id' <> 'media_files_count .\n{item}")
 
 
@@ -115,7 +119,7 @@ def process_resource(args, session, collection_path, id):
     resource_str = aviaryApi.get_resource_item(args, session, id)
     resource = json.loads(resource_str)
     output_generic(path, resource, id)
-    process_media_by_resource(args, session, path, resource['data'])
+    process_media_by_resource(args, session, path, resource)
     # supplemental file attached to resource 
     process_supplemental_files(args, session, path, resource['data']['supplemental_id'])
 

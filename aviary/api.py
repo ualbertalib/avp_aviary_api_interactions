@@ -313,3 +313,69 @@ def get_supplemental_files_item(args, session, id):
     # print(response.content)
     response.raise_for_status()
     return response.content
+
+
+#
+def download_indexes_item(session, index, path):
+
+    if ( index['data']['export']['file_name'] ):
+        file_name = index['data']['export']['file_name']
+    else:
+        # file name sometimes "null"
+        file_name = f"{index['data']['id']}.webvtt"
+        logging.warning(f"Missing file name in metadata {index}")
+
+    local_file_path = os.path.join(path, file_name)
+    url = index['data']['export']['file']
+
+    logging.info(f"{file_name} {index['data']['export']['file_content_type']}")
+
+    export_file(session, url, local_file_path) 
+
+
+#
+def download_supplemental(session, supplemental_file, path):
+
+    file_name = supplemental_file['data'].get(
+        'associated_file_file_name',
+        f"{supplemental_file['data']['id']}"
+        )
+    if 'associated_file_file_name' not in supplemental_file['data']:
+        logging.error(f"Missing file name in metadata {supplemental_file}")
+
+    local_file_path = os.path.join(path, file_name)
+    url = supplemental_file['data']['file']
+
+    logging.info(f"{local_file_path} {supplemental_file}")
+
+    export_file(session, url, local_file_path) 
+
+
+#
+def download_transcript(session, transcript, path):
+    
+    for key, value in transcript['data']['export'].items():
+
+        file_name = value.get('file_name', f"{transcript['data']['id']}.{key}")
+        if 'file_name' not in value:
+            logging.warning(f"Missing file name in metadata {transcript}")
+
+        local_file_path = os.path.join(path, file_name)
+        url = value['file']
+    
+        logging.info(f"{local_file_path} {value}")
+
+        export_file(session, url, local_file_path) 
+
+
+#
+def export_file(session, url, local_file_path):
+    logging.info(f"Download URL: {url}")
+
+    with session.get(url, stream=True) as response:
+        response.raise_for_status()
+        with open(local_file_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+    logging.info(f"Stored: {local_file_path}")
