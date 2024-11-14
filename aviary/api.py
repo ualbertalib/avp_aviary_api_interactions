@@ -318,19 +318,22 @@ def get_supplemental_files_item(args, session, id):
 #
 def download_indexes_item(session, index, path):
 
-    if ( index['data']['export']['file_name'] ):
-        file_name = index['data']['export']['file_name']
+    if 'export' not in index['data'] :
+        logging.error(f"JSON key {index} {path}")
     else:
-        # file name sometimes "null"
-        file_name = f"{index['data']['id']}.webvtt"
-        logging.warning(f"Missing file name in metadata {index}")
+        if ( index['data']['export']['file_name'] ):
+            file_name = index['data']['export']['file_name']
+        else:
+            # file_name sometimes "null" / "None"
+            file_name = f"{index['data']['id']}.webvtt"
+            logging.warning(f"Missing file name in metadata {index}")
 
-    local_file_path = os.path.join(path, file_name)
-    url = index['data']['export']['file']
+        local_file_path = os.path.join(path, file_name)
+        url = index['data']['export']['file']
 
-    logging.info(f"{file_name} {index['data']['export']['file_content_type']}")
+        logging.info(f"{file_name} {index['data']['export']['file_content_type']}")
 
-    export_file(session, url, local_file_path) 
+        export_file(session, url, local_file_path) 
 
 
 #

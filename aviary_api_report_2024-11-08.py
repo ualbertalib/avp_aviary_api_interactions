@@ -73,9 +73,9 @@ def process_indexes(args, session, path, indexes_list):
         id = item['id']
         indexes_str = aviaryApi.get_indexes_item_v2(args, session, id)
         indexes = json.loads(indexes_str)
-        path_transcript = os.path.join(path, 'indexes', str(id))
-        output_generic(path_transcript, indexes, id)
-        aviaryApi.download_indexes_item(session, indexes, path_transcript)
+        path_indexes = os.path.join(path, 'indexes', str(id))
+        output_generic(path_indexes, indexes, id)
+        aviaryApi.download_indexes_item(session, indexes, path_indexes)
         count += 1
     if count > 1:
         logging.warning(f"Check: indexes count: [{count}] - 'indexes' property {path} {indexes_list}")
@@ -97,10 +97,10 @@ def process_media_by_resource(args, session, path, item):
         count += 1
     aviaryUtilities.validateResourceMediaList(item) 
     if count > 10:
-        logging.debug(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
+        logging.debug(f"Check: media files count: [{count}] media_files_count: [{item['data']['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
         logging.debug(f"Media count {count}")
     if count < item['data']['media_files_count']:
-        logging.error(f"Check: media files count: [{count}] media_files_count: [{item['media_files_count']}] - count 'media_file_id' <> 'media_files_count .\n{item}")
+        logging.error(f"Check: media files count: [{count}] media_files_count: [{item['data']['media_files_count']}] - count 'media_file_id' <> 'media_files_count .\n{item}")
 
 
 # build collection directory from specified path and ID and store collection metadata in a file named after the ID
@@ -114,14 +114,18 @@ def output_generic(path, item, id):
 
 #
 def process_resource(args, session, collection_path, id):
-    path = os.path.join(collection_path, 'collection_resources', str(id))
-    logging.debug(f"Path: {path}")
-    resource_str = aviaryApi.get_resource_item(args, session, id)
-    resource = json.loads(resource_str)
-    output_generic(path, resource, id)
-    process_media_by_resource(args, session, path, resource)
-    # supplemental file attached to resource 
-    process_supplemental_files(args, session, path, resource['data']['supplemental_id'])
+    try:
+        path = os.path.join(collection_path, 'collection_resources', str(id))
+        logging.debug(f"Path: {path}")
+        resource_str = aviaryApi.get_resource_item(args, session, id)
+        resource = json.loads(resource_str)
+        output_generic(path, resource, id)
+        process_media_by_resource(args, session, path, resource)
+        # supplemental file attached to resource 
+        process_supplemental_files(args, session, path, resource['data']['supplemental_id'])
+    except Exception as e:
+        logging.error(f"Resource ID {id} Exception: {e}")
+        traceback.print_exc()
 
 
 #
@@ -155,7 +159,7 @@ def process_resources_by_collection(args, session, collection_path, collection_i
         except Exception as e:
             logging.error(f"{e}")
             traceback.print_exc()
-            break;
+            # break;
         else:
             page_number+=1
 
