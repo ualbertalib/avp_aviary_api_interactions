@@ -59,7 +59,7 @@ def init_session(args, username, password):
 
 
 # initialize a session with API endpoint
-def init_session_api_key(args):
+def init_session_api_key(server, organization_id=None):
 
     retry_strategy = Retry(
         total=5,
@@ -81,7 +81,7 @@ def init_session_api_key(args):
     auth_endpoint = 'api/v1/auth/sign_in'
 
     response = session.post(
-        urljoin(args.server, auth_endpoint),
+        urljoin(server, auth_endpoint),
         headers={'Content-Type': 'application/json', 'Authorization': os.getenv('AVIARY_API_KEY')}
     )
     response.raise_for_status()
@@ -89,9 +89,16 @@ def init_session_api_key(args):
     # aviary headers for auth:
     # assumes first org in the list and user only belongs to one org
     # https://www.aviaryplatform.com/api/v1/documentation#jump-Authorization-Authorization_3A_2Fapi_2Fv1_2Fauth_2Fsignin
+    if organization_id is None:
+        logging.debug(f"Session response: {response.json()}")
+        if 'AVIARY_API_ORGANIZATION_ID' in os.environ:
+            organization_id = os.getenv('AVIARY_API_ORGANIZATION_ID')
+        else:
+            organization_id = f"{response.json()['data']['organizations'][0]['id']}"
+            # raise MissingEnvironmentVariable('AVIARY_API_OEGANIZATION_ID')
     auth = {
         'Authorization': os.getenv('AVIARY_API_KEY'),
-        'organization-id': f"{response.json()['data']['organizations'][0]['id']}"
+        'organization-id': organization_id
     }
     session.headers.update(auth)
     return session

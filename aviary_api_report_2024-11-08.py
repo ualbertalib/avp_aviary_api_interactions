@@ -221,7 +221,7 @@ def main():
 
     logging.basicConfig(level=args.logging_level)
 
-    session = aviaryApi.init_session_api_key(args)
+    session = aviaryApi.init_session_api_key(args.server)
 
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)

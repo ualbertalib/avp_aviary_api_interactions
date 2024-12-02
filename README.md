@@ -40,9 +40,10 @@ A SaaS vendor audio/video repository solution. Terminology:
   * Usage:
     * [Create API Key and store](https://coda.aviaryplatform.com/edit-user-profile-83#_luHGN)
     * export AVIARY_API_KEY=string_from step above
+    * export AVIARY_API_ORGANIZATION_ID=128
     * `python3 aviary_api_report_2024-11-08.py --server ${SERVER_URL}  --output /tmp/aviary_test/ --help`
-     * includes ability to optionally limit to a single collection or resource (see --help output for details)
-     * stores in a hierarchical directory by collection id
+      * includes ability to optionally limit to a single collection or resource (see --help output for details)
+      * stores in a hierarchical directory by collection id
 * Request metadata about a single Aviary item by ID
   * [avairy_api_get_by_id.py](./aviary_api_get_by_id.py)
 * Upload a list of media items
