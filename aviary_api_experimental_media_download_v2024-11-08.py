@@ -1,8 +1,11 @@
 ##############################################################################################
 # desc: exploratory script to download files attached to Aviary content (audio/video only NOT transcripts, index, and supplemental files)
-#       exploritory / proof-of-concept code
+#       exploratory / proof-of-concept code
 # usage:
 #       python3 aviary_api_experimental_media_download_v2024-11-08.py --server ${SERVER_URL} --output_dir /tmp/  --media_id ${ID}
+#       * [Create API Key and store](https://coda.aviaryplatform.com/edit-user-profile-83#_luHGN)
+#           * export AVIARY_API_KEY=string_from step above
+#           * export AVIARY_API_ORGANIZATION_ID=128
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 # date: June 22, 2022
 ##############################################################################################
@@ -96,12 +99,14 @@ def download_media(session, args):
             item_json = json.loads(item)
             logging.info(f"Media after is_downloadable reset : {item_json}")
 
+
 #
 def process(args, session, headers=""):
 
     text = input("SANDBOX item only!!! Code modifies permissions. Continue (Y/n)?")
     if (text == "Y"):
         download_media(session, args)
+
 
 #
 def main():
@@ -111,7 +116,7 @@ def main():
     logging.getLogger().setLevel(args.logging_level)
 
     session = aviaryApi.init_session_api_key(args.server)
-  
+
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
 

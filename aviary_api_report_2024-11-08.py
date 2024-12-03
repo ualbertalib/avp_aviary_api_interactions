@@ -1,7 +1,11 @@
 ##############################################################################################
 # desc: connect to the Aviary API and get metadata
 #       exploratory / proof-of-concept code
-# usage: python3 aviary_api_report_2024-11-08.py --server ${aviary_server_name} --output ${output_path}
+# usage:
+#       python3 aviary_api_report_2024-11-08.py --server ${aviary_server_name} --output ${output_path}
+#       * [Create API Key and store](https://coda.aviaryplatform.com/edit-user-profile-83#_luHGN)
+#           * export AVIARY_API_KEY=string_from step above
+#           * export AVIARY_API_ORGANIZATION_ID=128
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 # date: June 15, 2022
 ##############################################################################################
@@ -22,7 +26,8 @@ from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
 
-AVIARY_PAGE_SIZE=100
+AVIARY_PAGE_SIZE = 100
+
 
 #
 def parse_args():
@@ -38,7 +43,7 @@ def parse_args():
 
 #
 def process_supplemental_files(args, session, path, supplemental_list):
-    count=0
+    count = 0
     for id in supplemental_list:
         supplemental_str = aviaryApi.get_supplemental_files_item(args, session, id)
         supplemental = json.loads(supplemental_str)
@@ -52,7 +57,7 @@ def process_supplemental_files(args, session, path, supplemental_list):
 
 #
 def process_transcripts(args, session, path, transcript_list):
-    count=0
+    count = 0
     for item in transcript_list:
         id = item['id']
         transcript_str = aviaryApi.get_transcripts_item(args, session, id)
@@ -67,7 +72,7 @@ def process_transcripts(args, session, path, transcript_list):
 
 #
 def process_indexes(args, session, path, indexes_list):
-    count=0
+    count = 0
     for item in indexes_list:
         # extract ID from a json array
         id = item['id']
@@ -83,7 +88,7 @@ def process_indexes(args, session, path, indexes_list):
 
 #
 def process_media_by_resource(args, session, path, item):
-    count=0
+    count = 0
     for id in item['data']['media_file_id']:
         media_str = aviaryApi.get_media_item(args, session, id)
         media = json.loads(media_str)
@@ -95,7 +100,7 @@ def process_media_by_resource(args, session, path, item):
         # index attached to media
         process_indexes(args, session, path_media, media['data']['indexes'])
         count += 1
-    aviaryUtilities.validateResourceMediaList(item) 
+    aviaryUtilities.validateResourceMediaList(item)
     if count > 10:
         logging.debug(f"Check: media files count: [{count}] media_files_count: [{item['data']['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{item}")
         logging.debug(f"Media count {count}")
@@ -112,6 +117,7 @@ def output_generic(path, item, id):
         logging.debug(file_path)
         json.dump(item, file, indent=4)
 
+
 #
 def process_resource(args, session, collection_path, id):
     try:
@@ -121,7 +127,7 @@ def process_resource(args, session, collection_path, id):
         resource = json.loads(resource_str)
         output_generic(path, resource, id)
         process_media_by_resource(args, session, path, resource)
-        # supplemental file attached to resource 
+        # supplemental file attached to resource
         process_supplemental_files(args, session, path, resource['data']['supplemental_id'])
     except Exception as e:
         logging.error(f"Resource ID {id} Exception: {e}")
@@ -130,10 +136,10 @@ def process_resource(args, session, collection_path, id):
 
 #
 def process_resources_by_collection(args, session, collection_path, collection_id):
-    page_number=1
-    page_next=True
+    page_number = 1
+    page_next = True
     # add test if page_number doesn't work to prevent infinite looping
-    first_id_of_page=0
+    first_id_of_page = 0
     while page_next:
         try:
             resources = aviaryApi.get_collection_resources(args, session, collection_id, page_number)
@@ -148,35 +154,35 @@ def process_resources_by_collection(args, session, collection_path, collection_i
                         break
                     elif (first_id_of_page == item['resource_id']):
                         logging.error(f"Pagination failed to move to the next page current {item['resource_id']} first {first_id_of_page} current page: {page_number}")
-                        page_next = False 
+                        page_next = False
                         break
                     else:
                         first_id_of_page = item['resource_id']
                         logging.info(f"Pagination {item['resource_id']} first {first_id_of_page} current page: {page_number}")
                 process_resource(args, session, collection_path, item['resource_id'])
-            print(f"Count resources: {index+1}")
-            if AVIARY_PAGE_SIZE > (index+1):
-                page_next = False 
+            print(f"Count resources: {index + 1}")
+            if AVIARY_PAGE_SIZE > (index + 1):
+                page_next = False
             else:
                 time.sleep(args.wait)
         except Exception as e:
             logging.error(f"{e}")
             traceback.print_exc()
         else:
-            page_number+=1
+            page_number += 1
 
 
-# Todo: setup pagination as decorator? 
+# Todo: setup pagination as decorator?
 def process_collection(args, session):
-    page_number=1
-    page_next=True
+    page_number = 1
+    page_next = True
     # add test if page_number doesn't work to prevent infinite looping
-    first_collection_id_of_page=0
+    first_collection_id_of_page = 0
     while page_next:
         try:
             if (args.collection):
                 # a single collection therefore no next page
-                collection_list = { "data": [ {"id": f"{args.collection}", "title": ""} ] } 
+                collection_list = {"data": [{"id": f"{args.collection}", "title": ""}]}
                 page_next = False
             else:
                 collections = aviaryApi.get_collection_list(args, session, page_number)
@@ -188,31 +194,32 @@ def process_collection(args, session):
                 if (index == 0):
                     if (first_collection_id_of_page == collection['id']):
                         logging.error(f"Pagination failed to move to the next page current {collection['id']} first {first_collection_id_of_page} current page: {page_number}")
-                        page_next = False 
+                        page_next = False
                         break
                     else:
                         first_collection_id_of_page = collection['id']
                 path = os.path.join(args.output_dir, f"{str(collection['id'])}")
                 output_generic(path, collection, str(collection['id']))
                 process_resources_by_collection(args, session, path, collection['id'])
-            print(f"Count collections {index+1}")
-            if AVIARY_PAGE_SIZE > (index+1):
-                page_next = False 
+            print(f"Count collections {index + 1}")
+            if AVIARY_PAGE_SIZE > (index + 1):
+                page_next = False
             else:
                 time.sleep(args.wait)
         except Exception as e:
             logging.error(f"{e}")
             traceback.print_exc()
         else:
-            page_number+=1
+            page_number += 1
 
 
-#        
+#
 def process(args, session):
     if args.resource:
         process_resource(args, session, args.output_dir, args.resource)
-    else: 
+    else:
         process_collection(args, session)
+
 
 #
 def main():
@@ -225,8 +232,9 @@ def main():
 
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
-    
+
     process(args, session)
+
 
 if __name__ == "__main__":
     main()

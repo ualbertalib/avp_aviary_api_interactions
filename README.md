@@ -1,6 +1,6 @@
 # AVP Aviary API Interactions
 
-The repository contains quickly written scripts designed to interact with the [AVP Aviary](https://www.aviaryplatform.com/api/v1/documentation) audio/video repository software. These scripts, as of Nov 2024 are only proof-of-concept.
+The repository contains quickly written scripts designed to interact with the [AVP Aviary](https://www.aviaryplatform.com/api/v1/documentation) audio/video repository software. These scripts, as of Nov 2024 are only proof-of-concept (i.e., return valid results but lack tests and error handling).
 
 ## Requirements
 
@@ -14,40 +14,52 @@ Code changed after Oct 2024
 * Python v3.12
 * git clone the repository
 
-Code before Oct. 2024
-* Python  < v3.12
-* git clone the repository
-* Install dependencies:
-  * `pip install -r requirements.txt --user`
-  * Or python3 setup.py install --user
-    * installed required modules in a local user account
-  * Or without `--user` to install into the OS's central Python environment (required administrative privileges)
-
 ## Aviary
 
-A SaaS vendor audio/video repository solution. Terminology:
+Aviary is a SaaS vendor audio/video repository solution.
 
-* `Resources`: term for the main container of the audio/video object (links together the metadata, `media` files, etc.)
-* `Media`: term for the container representing one or more audio/video files, associated file metadata; linked to the `resource`
-* `Index`: term for the container representing one or more indexes into the media and associated metadata; linked to a `media` item
-* `Transcript`: term for the container representing one or more transcripts of the audio/video; linked to a `media` item
-* `Supplemental Files`: term for the container representing one or more supplemental files (JPEG, PDF, etc.) attached to the resource; linked to a `resource` item
+Terminology:
+
+* `Collection`: a container holding resources
+* `Resources`: the main container of the audio/video object (links together the metadata, `media` files, etc.)
+* `Media`: the container representing an audio/video file and associated metadata; linked to the `resource`
+* `Index`: the container representing indexes into the media and associated metadata; linked to a `media` item
+* `Transcript`: the container representing a transcript of the audio/video; linked to a `media` item
+* `Supplemental Files`: the container representing a supplemental file (JPEG, PDF, etc.) attached to the resource; linked to a `resource` item
+
+``` mermaid
+erDiagram
+  Collection ||--o{ Resource : contains
+  Collection {}
+  Resource ||--o{ Media : contains
+  Resource ||--o{ "Supplemental files" : contains
+  Media ||--o{ Index : contains
+  Media ||--o{ Transcripts : contains
+```
+
+The above entity relationship diagram models the Aviary API as of November 2024. A more detailed diagram is available in the [Aviary Documentation: content model](https://coda.aviaryplatform.com/aviary-simple-content-model-156).
 
 ## Main Scripts
 
-* Download metadata (all | specified collection | specified resource) by API Key
+The scripts leverage the [Aviary API](https://coda.aviaryplatform.com/aviary-api-14). To use the API as of November 2024, an API Key needs to be generated and passed to the sign-in API endpoint along with the organization ID. The details for authentication:
+
+* [Create API Key and store](https://coda.aviaryplatform.com/edit-user-profile-83#_luHGN)
+* Pass the value to the following scripts via environment variables (or anther method)
+  * export AVIARY_API_KEY=string_from_step_above
+  * export AVIARY_API_ORGANIZATION_ID=128
+
+The main scripts:
+
+* Download metadata [all | by specified collection | by specified resource] (includes attached files except for media files due to their special handling)
   * [aviary_api_report_2024-11-08.py](./aviary_api_report_2024-11-08.py)
   * Usage:
-    * [Create API Key and store](https://coda.aviaryplatform.com/edit-user-profile-83#_luHGN)
-    * export AVIARY_API_KEY=string_from step above
-    * export AVIARY_API_ORGANIZATION_ID=128
     * `python3 aviary_api_report_2024-11-08.py --server ${SERVER_URL}  --output /tmp/aviary_test/ --help`
       * includes ability to optionally limit to a single collection or resource (see --help output for details)
       * stores in a hierarchical directory by collection id
-* Request metadata about a single Aviary item by ID
-  * [avairy_api_get_by_id.py](./aviary_api_get_by_id.py)
-* Upload a list of media items
-  * [aviary_media_api_upload_chunked.py](./aviary_media_api_upload_chunked.py)
+* Request media files from single Aviary media item by ID (note the script's special handling of media files with restricted access controls)
+  * [aviary_api_experimental_media_download_v2024-11-08.py](./aviary_api_experimental_media_download_v2024-11-08.py)
+
+More about the [Aviary API in this link](https://aviaryplatform.com/api/v1/documentation).
 
 ## Development
 
@@ -81,7 +93,7 @@ Note: March 2024 - the [./json](./json/) directory contains the more recently us
 * Ability to work with proof-of-concept level software (e.g., exception handling is basic and involves reading stack traces)
 * Elevated user privileges to access the Aviary API (i.e., default privileges on your campus computing id are insufficient)
 
-## Setup before Oct 2024
+### Setup before Oct 2024
 
 Code before Oct. 2024
 
@@ -93,19 +105,20 @@ Code before Oct. 2024
     * installed required modules in a local user account
   * Or without `--user` to install into the OS's central Python environment (required administrative privileges)
 
-
 **Note:** the vendor rate limits API requests. Each of the following scripts uses a simple wait mechanism between API requests. A more advanced approach could be implemented where the wait time is dynamically computed based on the response latency plus a retry mechanism. As of 2023-05-29, running multiple scripts will cause one to fail with the default wait settings.
 
 **Note:** pagination is not documented (as of 2023-05-29) so workarounds are needed for collections with more than 100 resources (e.g., use Web UI export to gain a list of IDs)
 
 **Note:** as of 2023-06-29, a resource returned by the Aviary API lists the attached media item(s) in the `media_file_id` field. However, `media_file_id` only contains a maximum of 10 IDs (a significant number of resources have over 10 media attached). I also tried via the Web UI, "export Media Files(s) to CSV" but the resulting file doesn't contain media IDs. How to get the entire list of media items is unknown.
 
-## Included Scripts
+### Included Scripts
 
 The main types of scripts (the details are in the following subsections):
 
 * Request metadata about a single Aviary item by ID
-  * `avairy_api_get_by_id.py`
+  * [aviary_api_get_by_id.py](./experimental/aviary_api_get_by_id.py)
+* Upload a list of media items
+  * [aviary_media_api_upload_chunked.py](./experimental/aviary_media_api_upload_chunked.py)
 * Request a CSV report of all items of a specified model. The file naming convention is `aviary_api_report_[model]_[output (CSV)]_[how the IDs are discovered]`. The offering includes:
   * aviary_api_report_index_csv_by_media_list.py
   * aviary_api_report_media_csv_by_media_list.py
