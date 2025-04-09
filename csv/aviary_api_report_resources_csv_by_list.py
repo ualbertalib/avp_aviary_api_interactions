@@ -10,11 +10,18 @@
 
 # Proof-of-concept only
 
-from getpass import getpass
 from time import sleep
 import argparse
 import csv
 import logging
+
+import sys
+import os
+
+# Add the sibling directory to the path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
@@ -23,7 +30,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', required=True, help='Servername.')
     parser.add_argument('--output', required=True, help='Location to store CSV output file.')
-    parser.add_argument('--input', required=True, help='List of resource IDs to add to the report.')
+    parser.add_argument('--input', required=True, help='List of resource IDs to add to the report (CSV inpute with "aviary ID" column as available from the Aviary resource export).')
     parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
     parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
@@ -38,9 +45,10 @@ def process(args, session, input_csv, report_csv):
     for i, resource in enumerate(input_csv):
         try:
             item = aviaryApi.get_resource_item(args, session, resource['aviary ID'])
-            report_csv.writerow(aviaryUtilities.processResourceJSON(item, resource['Collection Title']))
+            collection_title = resource.get('Collection Title', "")
+            report_csv.writerow(aviaryUtilities.processResourceJSON(item, collection_title))
         except BaseException as e:
-            logging.error(f"{e} \n{item}")
+            logging.error(f"Exception [{e}] \n{item}")
             # add a line to the CSV output with the error
             report_csv.writerow({'Resource ID': resource['aviary ID'], 'Resource title': item})
         sleep(args.wait)
@@ -52,11 +60,11 @@ def process(args, session, input_csv, report_csv):
 def main():
     args = parse_args()
 
-    username = input('Username:')
-    password = getpass('Password:')
+    session = aviaryApi.init_session_api_key(args.server)
 
-    session = aviaryApi.init_session(args, username, password)
-
+    # Instead of an input file of IDs, use the 2024 Pagination documentation:
+    #   https://github.com/ualbertalib/avp_aviary_api_interactions/blob/4a120acb5d89e8f8cccb287f8596cc7da22a3b8a/aviary_api_report_2024-11-08.py#L138-L173
+    # The above should be improved upon as implemented as a decorator
     with open(args.input, 'r', encoding="utf-8", newline='') as input_file:
         input_csv = csv.DictReader(input_file)
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:

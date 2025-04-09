@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get metadata
+# desc: connect to the Aviary API and get metadata and dump as JSON files
 #       exploratory / proof-of-concept code
 # usage:
 #       python3 aviary_api_report_2024-11-08.py --server ${aviary_server_name} --output ${output_path}
