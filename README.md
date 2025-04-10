@@ -58,7 +58,8 @@ The main scripts:
       * stores in a hierarchical directory by collection id
 * Request media files from single Aviary media item by ID (note the script's special handling of media files with restricted access controls)
   * [aviary_api_experimental_media_download_v2024-11-08.py](./aviary_api_experimental_media_download_v2024-11-08.py)
-* `csv/aviary_api_report_resources_csv_by_list.py` updated to help determine the Aviary resources added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
+* `csv/aviary_api_report_resources_csv_by_list.py` minimally updated to help determine the Aviary resources added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
+* `csv/aviary_api_report_media_csv_by_media_list.py` minimally updated to help determine the Aviary duration of media added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
 * Other scripts not mentioned here are likely broken by 2024 Aviary changes.
 
 More about the [Aviary API in this link](https://aviaryplatform.com/api/v1/documentation).

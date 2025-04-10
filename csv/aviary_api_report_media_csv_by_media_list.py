@@ -14,8 +14,14 @@ from getpass import getpass
 from time import sleep
 import argparse
 import csv
-import json
 import logging
+import sys
+import os
+
+# Add the sibling directory to the path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
@@ -25,7 +31,7 @@ def parse_args():
     parser.add_argument('--server', required=True, help='Servername.')
     parser.add_argument('--output', required=True, help='Location to store CSV output file.')
     parser.add_argument('--input', required=True, help='List of media IDs to add to the report.')
-    parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.1)
+    parser.add_argument('--wait', required=False, help='Time to wait between API calls.', default=0.001)
     parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
 
@@ -39,7 +45,8 @@ def process(args, session, input_csv, report_csv):
         # Get the media attached to the given resource
         try:
             media = aviaryApi.get_media_item(args, session, row['aviary ID'])
-            report_csv.writerow(aviaryUtilities.processMediaJSON(media, row['Collection Title'], "", row['Linked Resource Id'], row['Linked Resource Title']))
+            #report_csv.writerow(aviaryUtilities.processMediaJSON(media, row['Collection Title'], "", row['Linked Resource Id'], row['Linked Resource Title']))
+            report_csv.writerow(aviaryUtilities.processMediaJSON(media, "", "", "", ""))
         except BaseException as e:
             logging.error(f"[{row['aviary ID']}] {e}")
         sleep(args.wait)
@@ -53,11 +60,11 @@ def main():
 
     logging.basicConfig(level=args.logging_level)
 
-    username = input('Username:')
-    password = getpass('Password:')
+    session = aviaryApi.init_session_api_key(args.server)
 
-    session = aviaryApi.init_session(args, username, password)
-
+    # todo: Instead of an input file of IDs, use the 2024 Pagination documentation:
+    #   https://github.com/ualbertalib/avp_aviary_api_interactions/blob/4a120acb5d89e8f8cccb287f8596cc7da22a3b8a/aviary_api_report_2024-11-08.py#L138-L173
+    # The above should be improved upon as implemented as a decorator
     with open(args.input, 'r', encoding="utf-8", newline='') as input_file:
         input_csv = csv.DictReader(input_file)
         with open(args.output, 'wt', encoding="utf-8", newline='') as output_file:

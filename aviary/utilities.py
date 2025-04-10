@@ -173,7 +173,7 @@ def processMediaJSON(item, collection_title, custom_unique_identifier, linked_re
         'Media embed url': media_json['data']['aviary_media_embed_url'],
         'Media embed type': media_json['data']['media_embed_type'],
         'Media embed code': media_json['data']['media_embed_code'],
-        'Transcode url': media_json['data']['transcode_url'],
+        #'Transcode url': media_json['data']['transcode_url'],
     }
 
 
