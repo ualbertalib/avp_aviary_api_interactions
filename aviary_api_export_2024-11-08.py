@@ -2,7 +2,7 @@
 # desc: connect to the Aviary API and get metadata and dump as JSON files
 #       exploratory / proof-of-concept code
 # usage:
-#       python3 aviary_api_report_2024-11-08.py --server ${aviary_server_name} --output ${output_path}
+#       python3 aviary_api_export_2024-11-08.py --server ${aviary_server_name} --output ${output_path}
 #       * [Create API Key and store](https://coda.aviaryplatform.com/edit-user-profile-83#_luHGN)
 #           * export AVIARY_API_KEY=string_from step above
 #           * export AVIARY_API_ORGANIZATION_ID=128

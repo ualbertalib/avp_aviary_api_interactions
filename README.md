@@ -50,10 +50,10 @@ The scripts leverage the [Aviary API](https://coda.aviaryplatform.com/aviary-api
 
 The main scripts:
 
-* Download metadata [all | by specified collection | by specified resource] (includes attached files except for media files due to their special handling)
-  * [aviary_api_report_2024-11-08.py](./aviary_api_report_2024-11-08.py)
+* Download metadata [all | by specified collection | by specified resource] as default JSON (includes attached files except for media files due to their special handling)
+  * [aviary_api_export_2024-11-08.py](./aviary_api_export_2024-11-08.py)
   * Usage:
-    * `python3 aviary_api_report_2024-11-08.py --server ${SERVER_URL}  --output /tmp/aviary_test/ --help`
+    * `python3 aviary_api_export_2024-11-08.py --server ${SERVER_URL}  --output /tmp/aviary_test/ --help`
       * includes ability to optionally limit to a single collection or resource (see --help output for details)
       * stores in a hierarchical directory by collection id
 * Request media files from single Aviary media item by ID (note the script's special handling of media files with restricted access controls)

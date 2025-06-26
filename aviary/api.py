@@ -333,7 +333,7 @@ def download_indexes_item(session, index, path):
         else:
             # file_name sometimes "null" / "None"
             file_name = f"{index['data']['id']}.webvtt"
-            logging.warning(f"Missing file name in metadata {index}")
+            logging.warning(f"Missing index file name in metadata {index}: assigning a default name {file_name}")
 
         local_file_path = os.path.join(path, file_name)
         url = index['data']['export']['file']
