@@ -142,7 +142,7 @@ def process_resources_by_collection(args, session, collection_path, collection_i
     first_id_of_page = 0
     while page_next:
         try:
-            resources = aviaryApi.get_collection_resources(args, session, collection_id, page_number)
+            resources = aviaryApi.get_collection_resources(args, session, collection_id, page_number, AVIARY_PAGE_SIZE)
             resource_list = json.loads(resources)
 
             for index, item in enumerate(resource_list['data']):
@@ -182,10 +182,16 @@ def process_collection(args, session):
         try:
             if (args.collection):
                 # a single collection therefore no next page
+                # 2025-06-26: API returning a list of collections (via `/api/v1/collections``)
+                # yields different collection metadata relative to (`/api/v1/collections/{collection_id}/metadata`)
+                # See https://www.aviaryplatform.com/api/v1/documentation
+                #c = aviaryApi.get_collection_metadata(args, session, args.collection)
+                #c_s = json.loads(c)
+                #logging.debug("Single collection metadata: %s", c_s)
                 collection_list = {"data": [{"id": f"{args.collection}", "title": ""}]}
                 page_next = False
             else:
-                collections = aviaryApi.get_collection_list(args, session, page_number)
+                collections = aviaryApi.get_collection_list(args, session, page_number, AVIARY_PAGE_SIZE)
                 collection_list = json.loads(collections)
             for index, collection in enumerate(collection_list['data']):
                 print(f"Collection: {collection['id']} Title: {collection['title']} Page: {page_number}")
@@ -193,7 +199,7 @@ def process_collection(args, session):
                 #   if true pagination failed; break out of process
                 if (index == 0):
                     if (first_collection_id_of_page == collection['id']):
-                        logging.error(f"Pagination failed to move to the next page current {collection['id']} first {first_collection_id_of_page} current page: {page_number}")
+                        logging.error(f"Pagination failed to move to the next page: current {collection['id']} first {first_collection_id_of_page} current page: {page_number}")
                         page_next = False
                         break
                     else:

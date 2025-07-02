@@ -39,12 +39,14 @@ erDiagram
 
 The above entity relationship diagram models the Aviary API as of November 2024. A more detailed diagram is available in the [Aviary Documentation: content model](https://coda.aviaryplatform.com/aviary-simple-content-model-156).
 
+For testing, use the `Sandbox` collection.
+
 ## Main Scripts
 
 The scripts leverage the [Aviary API](https://coda.aviaryplatform.com/aviary-api-14). To use the API as of November 2024, an API Key needs to be generated and passed to the sign-in API endpoint along with the organization ID. The details for authentication:
 
 * [Create API Key and store](https://coda.aviaryplatform.com/edit-user-profile-83#_luHGN)
-* Pass the value to the following scripts via environment variables (or anther method)
+* Pass the value to the following scripts via environment variables (or another method)
   * export AVIARY_API_KEY=string_from_step_above
   * export AVIARY_API_ORGANIZATION_ID=128
 
@@ -329,3 +331,13 @@ Note: uses fragile workarounds as AVP Aviary API does not cover all the required
      * `python3 avp_aviary_api_interactions/experimental/experimental_test_batch_download.py --server 'https://ualberta.aviaryplatform.com/' --input_file delete2/index_id_list_2024-03-25.csv --output_path delete2/index_file_export/ --type i --wait 10`
    * using the new API index endpoint as of March 2024
      * `python3 avp_aviary_api_interactions/json/aviary_api_download_index_by_index_json.py --server 'https://ualberta.aviaryplatform.com/' --input delete2/aviary_collection_1783_index_2024-03-25.json --output delete2/index_file_export__new_api_march_2024 --wait 5`
+
+## FAQ
+
+### Find large media files for testing
+
+Export aviary as JSON and run the following
+
+``` bash
+grep -I -R ' MB' ~/Downloads/aviary/ | grep '[0-9][0-9][0-9][0-9][0-9]\.[0-9]'
+```

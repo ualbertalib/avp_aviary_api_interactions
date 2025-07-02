@@ -272,7 +272,8 @@ def progressIndicator(i, logging_level):
         print(f"{i}.", end="", flush=True)
 
 
-# download a file via stream & chunks
+# Download a file via stream & chunks
+# Requires chunked download for media files (some in the range of 10GB)
 def download_file(session, url, filename='tmp', path="/tmp/", headers=""):
     logging.info(f"Download URL: {url}")
     local_file_path = os.path.join(path, filename)
