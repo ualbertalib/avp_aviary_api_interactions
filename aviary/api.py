@@ -188,7 +188,7 @@ def put_media_item(args, session, item):
                 "access": item['access'],
                 "is_360": item['is_360'],
                 "filename": content_name,
-                # "display_name" : item['display_name'],
+                "display_name" : item['display_name'],
             }
             files = {"media_file": chunk}
             headers = {
@@ -203,10 +203,13 @@ def put_media_item(args, session, item):
                 timeout=120,
                 verify=False
             )
-            response_content = json.loads(response.content)
-            if "errors" in response_content:
-                print(f"ERROR: {response_content['errors']}")
-                print(f"{response.request.url}")
+            if "application/json" in response.headers.get('Content-Type', ''):
+                response_content = json.loads(response.text)
+                if "errors" in response_content:
+                    print(f"ERROR: {response_content['errors']}")
+                    print(f"{response.request.url}")
+            else:
+                raise ValueError(f"Unexpected Content-Type: {response.headers.get('Content-Type', '')} -- should be JSON")
             print(response.__dict__)
             index = offset
             response.raise_for_status()

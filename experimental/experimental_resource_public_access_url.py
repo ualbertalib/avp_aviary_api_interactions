@@ -3,11 +3,10 @@
 #       as a means to download content and recover from unknown problems.
 #       exploritory / proof-of-concept code
 # usage:
-#       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id ${ID} --type ${TYPE}
-#       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id 53122 --type i
-#       python3 experimental/experimental_download.py --server ${SERVER_URL}  --id 192882 --type x
+#       python3 experimental/experimental_resource_public_access_url.py --server ${SERVER_URL} --collection_id ${C_ID} --resource_id ${R_ID} --id {MEDIA_ID}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 # date: June 22, 2023
+#       Update 2025 July, likely fails with the latest Aviary UI changes
 ##############################################################################################
 
 # Given a type and ID, download the attached file
@@ -44,73 +43,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def update_media_downloadable(session, server, id, value):
-    url = urljoin(server, 'api/v1/media_files/' + str(id))
-    value = 'true' if (value is True) else 'false'
-    params = {
-        # 'is_downloadable': 'true'
-        'is_downloadable': value
-    }
-    response = session.put(url, params=params)
-    logging.info(f"{response.request.url}")
-    logging.info(f"{response.content}")
-    return response.content
-
-
-def update_resource_access(session, server, id, value):
-    url = urljoin(server, 'api/v1/resources/' + str(id))
-    params = {
-        'access': value
-    }
-    response = session.put(url, params=params)
-    logging.info(f"{response.request.url}")
-    logging.info(f"{response.content}")
-    return response.content
-
-
-def download_media(session, args):
-    item = aviaryApi.get_media_item(args, session, args.id)
-    item_json = json.loads(item)
-    logging.info(f"Media: {item_json}")
-
-    # set resource private before enabling download link
-    # Todo: error check
-    # resource_id = item_json['data']['collection_resource_id']
-    # resource = aviaryApi.get_media_item(args, session, resource_id)
-    # resource_json = json.loads(item)
-    # original_resource_access = resource_json['data']['access']
-    # current_resource_access = resource_json['data']['access']
-    # if (original_resource_access != 'private'):
-    #     resource_json = update_resource_access(session, args.server, resource_id, 'private')
-    #     resource_json = json.loads(item)
-    #     current_resource_access = resource_json['data']['access']
-
-    # Need is_downloadable to be true to allow downloads
-    # Todo: error check
-    original_is_downloadable = item_json['data']['is_downloadable']
-    current_is_downloadable = False
-    if original_is_downloadable is False:
-        item = update_media_downloadable(session, args.server, args.id, True)
-        item_json = json.loads(item)
-        logging.info(f"Media: {item_json}")
-        current_is_downloadable = item_json['data']['is_downloadable']
-
-    url = item_json['data']['media_download_url']
-    filename = url.rsplit('/', 1)[-1].split('?')[0]
-    aviaryUtilities.download_file(session, url, filename)
-
-    # Need is_downloadable to be set to the original value
-    if original_is_downloadable != current_is_downloadable:
-        update_media_downloadable(session, args.server, args.id, original_is_downloadable)
-        item = aviaryApi.get_media_item(args, session, args.id)
-        item_json = json.loads(item)
-
-    # todo what if fails before?
-    # if (original_resource_access != current_resource_access):
-    #    resource_json = update_resource_access(session, args.server, resource_id, original_resrouce_access)
-
-
 def download_media_by_resource_public_access_url(session, server, collection_id, resource_id, media_id):
+    # May faile with 2025 bot mitigations (Cloudflare turnstile)
     # get duration of the expireing public access URL
     duration = aviaryUI.resource_public_access_duration()
     logging.info(f"Start/end: {duration}")
@@ -139,25 +73,8 @@ def download_media_by_resource_public_access_url(session, server, collection_id,
 
 
 def process(args, session, headers=""):
-    if args.type == 's':
-        item = aviaryApi.get_supplemental_files_item(args, session, args.id)
-        item_json = json.loads(item)
-        logging.info(f"Supplemental File: {item_json}")
-        aviaryUtilities.download_file(session, item_json['data']['file'], item_json['data']['associated_file_file_name'])
-    elif args.type == 't':
-        url = urljoin(args.server, '/transcripts/export/webvtt/' + str(args.id))
-        filename = args.id + '.webvtt'
-        aviaryUtilities.download_file(session, url, filename, headers=headers)
-    elif args.type == 'i':
-        url = urljoin(args.server, '/indexes/export//' + str(args.id))
-        filename = args.id + '.webvtt'
-        aviaryUtilities.download_file(session, url, filename, headers=headers)
-    elif args.type == 'x':
+   if args.type == 'x':
         download_media_by_resource_public_access_url(session, args.server, args.collection_id, args.resource_id, args.id)
-    elif args.type == 'm':
-        text = input("SANDBOX item only!!! Code modifies permissions. Continue (Y/n)?")
-        if (text == "Y"):
-            download_media(session, args)
 
 
 #
@@ -169,38 +86,11 @@ def main():
     username = input('Username:')
     password = getpass('Password:')
 
-    if args.type == 't':
-        # todo: replace with a python auth script that can handle the MFA request
-        if (args.session_cookie):
-            session_ui = requests.Session()
-            token = aviaryUI.get_auth_from_file(args)
-            headers = aviaryUI.build_session_header(args, token, '/transcripts', session_ui)
-        else:
-            otp_attempt = getpass('MFA OTP:')
-            session_ui = aviaryUI.init_session(args, username, password, otp_attempt)
-            headers = {}
-        process(args, session_ui, headers)
-    elif args.type == 'i':
-        # todo: replace with a python auth script that can handle the MFA request
-        if (args.session_cookie):
-            session_ui = requests.Session()
-            token = aviaryUI.get_auth_from_file(args)
-            headers = aviaryUI.build_session_header(args, token, '/indexes', session_ui)
-        else:
-            otp_attempt = getpass('MFA OTP:')
-            session_ui = aviaryUI.init_session(args, username, password, otp_attempt)
-            headers = {}
-        process(args, session_ui, headers)
-    elif args.type == 'x':
-        otp_attempt = getpass('MFA OTP:')
-        session_ui = aviaryUI.init_session(args, username, password, otp_attempt)
-        headers = {}
+    otp_attempt = getpass('MFA OTP:')
+    session_ui = aviaryUI.init_session(args, username, password, otp_attempt)
+    headers = {}
 
-        process(args, session_ui, headers)
-
-    else:
-        session = aviaryApi.init_session(args, username, password)
-        process(args, session)
+    process(args, session_ui, headers)
 
 
 if __name__ == "__main__":
