@@ -1,5 +1,5 @@
 ##############################################################################################
-# desc: connect to the Aviary API and get metadata and dump as JSON files
+# desc: connect to the Aviary API and get metadata and dump as JSON files and attached files (no media files)
 #       exploratory / proof-of-concept code
 # usage:
 #       python3 aviary_api_export_2024-11-08.py --server ${aviary_server_name} --output ${output_path}
@@ -138,6 +138,7 @@ def process_resource(args, session, collection_path, id):
 def process_resources_by_collection(args, session, collection_path, collection_id):
     page_number = 1
     page_next = True
+    # Resource pagination not documented in the API in 2023 
     # add test if page_number doesn't work to prevent infinite looping
     first_id_of_page = 0
     while page_next:
@@ -176,6 +177,7 @@ def process_resources_by_collection(args, session, collection_path, collection_i
 def process_collection(args, session):
     page_number = 1
     page_next = True
+    # Collection pagination not enabled in the API as of 2025-07-04
     # add test if page_number doesn't work to prevent infinite looping
     first_collection_id_of_page = 0
     while page_next:
