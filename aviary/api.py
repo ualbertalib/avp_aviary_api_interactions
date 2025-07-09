@@ -21,7 +21,7 @@ import traceback
 
 
 # chunk size
-CHUNK_SIZE = 90000000
+CHUNK_SIZE = 900000
 
 
 class MissingEnvironmentVariable(Exception):
@@ -177,6 +177,9 @@ def put_media_item(args, session, item):
     offset = 0
 
     print(f"Uploading: [{item['filepath']}] with size [{content_size}]")
+    print("Request Headers:")
+    for key, value in session.headers.items():
+        print(f"    {key}: {value}")
 
     print(str(datetime.datetime.now()) + " #################################################")
     try:
@@ -209,6 +212,10 @@ def put_media_item(args, session, item):
                     print(f"ERROR: {response_content['errors']}")
                     print(f"{response.request.url}")
             else:
+                print("Request URL:", response.request.url)
+                print("Request Headers:")
+                for key, value in response.request.headers.items():
+                    print(f"    {key}: {value}")
                 raise ValueError(f"Unexpected Content-Type: {response.headers.get('Content-Type', '')} -- should be JSON")
             print(response.__dict__)
             index = offset
@@ -266,7 +273,10 @@ def upload_based_on_avp_documentation(args, session, item):
                 # "display_name" : item['display_name'],
             }
             r = session.post(url=url, files=files, params=params, headers=headers)
-            print(r.json())
+            if "application/json" in r.headers.get('Content-Type', ''):
+                print(r.json())
+            else:
+                print(r.__dict__)
             print("r: %s, Content-Range: %s" % (r, headers['Content-Range']))
         except Exception as e:
             print(e)
