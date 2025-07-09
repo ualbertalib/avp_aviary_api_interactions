@@ -62,6 +62,8 @@ The main scripts:
   * [aviary_api_experimental_media_download_v2024-11-08.py](./aviary_api_experimental_media_download_v2024-11-08.py)
 * `csv/aviary_api_report_resources_csv_by_list.py` minimally updated to help determine the Aviary resources added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
 * `csv/aviary_api_report_media_csv_by_media_list.py` minimally updated to help determine the Aviary duration of media added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
+* Upload a list of media items (updated in 2025 but not working July 2025)
+  * [aviary_media_api_upload_chunked.py](./experimental/aviary_media_api_upload_chunked.py)
 * Other scripts not mentioned here are likely broken by 2024 Aviary changes.
 
 More about the [Aviary API in this link](https://aviaryplatform.com/api/v1/documentation).
@@ -82,7 +84,9 @@ python3 tests/unit_tests.py
 
 ## Older notes from before Oct 2024
 
-Note: March 2024 - the [./json](./json/) directory contains the more recently used scripts (for the SpokenWeb export).
+Note: June 2025 - aviary_api_export_2024-11-08.py replaces the "json" exports
+
+Note: March 2024 - the [./experimental/obsolete/json](./experimental/obsolete/json/) directory contains the more recently used scripts (for the SpokenWeb export).
 
 **Notes:** 2024-10-06
 
@@ -132,7 +136,7 @@ The main types of scripts (the details are in the following subsections):
   * aviary_api_report_transcripts_csv_by_media_list.py
 * Upload a list of media items
 * JSON output (new 2023/2024)
-  * ./json/
+  * ./experimental/obsolete/json/
 * [Experimental:](./experimental/) working with the Aviary API in different ways including the use of the collection API to find resource lists without needing the Web UI export.
 
 The details:
@@ -177,7 +181,7 @@ python3 experimental/aviary_api_report_resources_csv.py --server ${aviary_server
 
 For a JSON-like output (more for debugging)
 
-[JSON](./json/)
+[JSON](./experimental/obsolete/json/)
 
 Or
 
@@ -215,7 +219,7 @@ Failed: an attempt to the resource CSV export instead of requiring the user to a
 python3 experimental/aviary_api_report_media_csv_by_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
-Or [JSON](./json/)
+Or [JSON](./experimental/obsolete/json/)
 
 ##### Transcripts metadata report
 
@@ -247,7 +251,7 @@ Note: `experiemental/aviary_api_report_transcripts_csv_by_list.py` uses the reso
 python3 aviary_api_report_index_csv_by_media_list.py --server ${aviary_server_name} --output ${output_path} -input ${input_path}
 ```
 
-Or [JSON](./json/), either JSON metadata or a index download/export of the WebVTT.
+Or [JSON](./experimental/obsolete/json/), either JSON metadata or a index download/export of the WebVTT.
 
 **Note:** the resource API response, when the `media files count` is >10, the `media file IDs` will display only a maximum of 10 IDs in the list (as of May 2023). An example is resource 58924
 
