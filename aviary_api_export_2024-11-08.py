@@ -140,6 +140,7 @@ def process_resources_by_collection(args, session, collection_path, collection_i
     page_next = True
     # Resource pagination not documented in the API in 2023 
     # add test if page_number doesn't work to prevent infinite looping
+    # July 2025: "total_entries" introduced; refactor pageination
     first_id_of_page = 0
     while page_next:
         try:
@@ -187,9 +188,20 @@ def process_collection(args, session):
                 # 2025-06-26: API returning a list of collections (via `/api/v1/collections``)
                 # yields different collection metadata relative to (`/api/v1/collections/{collection_id}/metadata`)
                 # See https://www.aviaryplatform.com/api/v1/documentation
+                # Example from July 2025:
+                # {"data": [
+                #   {
+                #       "system_name":"creator",
+                #       "value":[{"value":"Default Unit","vocab_value":""}]
+                #   },
+                #   {
+                #       "system_name":"identifier",
+                #       "value":[{"value":"g158bh816","vocab_value":""}]
+                #   }
+                #   ]}
                 #c = aviaryApi.get_collection_metadata(args, session, args.collection)
                 #c_s = json.loads(c)
-                #logging.debug("Single collection metadata: %s", c_s)
+                #logging.info("Single collection metadata: %s", c_s)
                 collection_list = {"data": [{"id": f"{args.collection}", "title": ""}]}
                 page_next = False
             else:
