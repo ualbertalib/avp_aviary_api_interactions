@@ -75,7 +75,8 @@ _transcript_csv_fieldnames = [
     "Language",
     "Description",
     "Is downloadable",
-    "Has annotation set"
+    "Has annotation set",
+    "Export"
 ]
 
 _index_csv_fieldnames = [
@@ -89,7 +90,11 @@ _index_csv_fieldnames = [
     "Custom unique resource ID",
     "Title",
     "language",
-    "Is public"
+    "Is public",
+    'Download Link',
+    'Export',
+    'Description',
+    'Resource File ID'
 ]
 
 _supplemental_files_csv_fieldnames = [
@@ -106,7 +111,8 @@ _supplemental_files_csv_fieldnames = [
     "Associated file content type",
     "File",
     "Created at",
-    "Updated at"
+    "Updated at",
+
 ]
 
 
@@ -187,19 +193,20 @@ def processTranscriptJSON(item, additional):
         "Transcript ID": transcript_json['data']['id'],
         # "Collection ID": collection['id'],
         # "Collection title": collection['title'],
-        "Collection title": additional['Collection title'],
-        "Linked resource title": additional['Linked resource title'],
-        "Linked resource ID": additional['Linked resource ID'],
-        "Custom unique resource ID": additional['custom_unique_identifier'],
+        "Collection title": additional.get('Collection title', ''),
+        "Linked resource title": additional.get('Linked resource title', ''),
+        "Linked resource ID": additional.get('Linked resource ID', ''),
+        "Custom unique resource ID": additional.get('custom_unique_identifier', ''),
         "Resource file ID": transcript_json['data']['resource_file_id'],
-        "Media ID": additional['media_file_id'],
+        "Media ID": additional.get('media_file_id', ''),
         "Is caption": transcript_json['data']['is_caption'],
         "Is public": transcript_json['data']['is_public'],
         "Title": transcript_json['data']['title'],
         "Language": transcript_json['data']['language'],
         "Description": transcript_json['data']['description'],
         "Is downloadable": transcript_json['data']['is_downloadable'],
-        "Has annotation set": additional['has_annotation_set']
+        "Has annotation set": additional.get('has_annotation_set', ''),
+        "Export": transcript_json['data']['export']
     }
 
 
@@ -215,18 +222,23 @@ def processIndexJSON(item, additional):
 # Todo: redo when pagination is active
 def processIndexDict(item, additional):
 
+    print(item)
     return {
         "Index ID": item['id'],
+        "Resource File ID": item['resource_file_id'],
         # "Collection ID": collection['id'],
         # "Collection title": collection['title'],
-        "Collection title": additional['Collection title'],
-        "Linked resource title": additional['Linked resource title'],
-        "Linked resource ID": additional['Linked resource ID'],
-        "Media ID": additional['media_file_id'],
-        "Custom unique resource ID": additional['custom_unique_identifier'],
+        "Collection title": additional.get('Collection title', ''),
+        "Linked resource title": additional.get('Linked resource title', ''),
+        "Linked resource ID": additional.get('Linked resource ID', ''),
+        "Media ID": additional.get('media_file_id', ''),
+        "Custom unique resource ID": additional.get('custom_unique_identifier', ''),
         "Title": item['title'],
         "language": item['language'],
         "Is public": item['is_public'],
+        "Description": item['description'],
+        "Download Link": item['download_link'],
+        "Export": item['export'],
     }
 
 

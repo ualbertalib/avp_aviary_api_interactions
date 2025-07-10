@@ -60,8 +60,12 @@ The main scripts:
       * stores in a hierarchical directory by collection id
 * Request media files from single Aviary media item by ID (note the script's special handling of media files with restricted access controls)
   * [aviary_api_experimental_media_download_v2024-11-08.py](./aviary_api_experimental_media_download_v2024-11-08.py)
-* `csv/aviary_api_report_resources_csv_by_list.py` minimally updated to help determine the Aviary resources added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
-* `csv/aviary_api_report_media_csv_by_media_list.py` minimally updated to help determine the Aviary duration of media added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
+* Help with reporting Aviary content changes during a reporting period (experimental)
+  * [Export metadata as CSV by type](./experimental/aviary_api_export_metadata_csv.py)
+    * Export a CSV to help determine Aviary resources added within a reporting time period (requires importing into a spreadsheet resources added during the reporting period): 
+      * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/z.csv --type r`
+    * Export a CSV to help determine duration of media added within a reporting time period (requires importing into a spreadsheet to sum duration of media added during the reporting period):
+      * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/z.csv --type m`
 * Upload a list of media items (updated in 2025 but not working July 2025)
   * [aviary_media_api_upload_chunked.py](./experimental/aviary_media_api_upload_chunked.py)
 * Other scripts not mentioned here are likely broken by 2024 Aviary changes.
@@ -84,7 +88,13 @@ python3 tests/unit_tests.py
 
 ## Older notes from before Oct 2024
 
-Note: June 2025 - aviary_api_export_2024-11-08.py replaces the "json" exports
+Note: July 2025 - aviary_api_export_metadata_csv.py replaces the "experiments/obsolete/csv" exports directory and the following:
+
+* Help with reporting Aviary content changes during a reporting period (experimental)
+  * `csv/aviary_api_report_resources_csv_by_list.py` minimally updated to help determine the Aviary resources added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
+  * `csv/aviary_api_report_media_csv_by_media_list.py` minimally updated to help determine the Aviary duration of media added within a reporting time period. Note: this should be updated to use the 2024 Aviary updates regarding pagination (see script comments) if this task is useful for the future.
+
+Note: June 2025 - aviary_api_export_2024-11-08.py replaces the "experiments/obsolete/json" exports
 
 Note: March 2024 - the [./experimental/obsolete/json](./experimental/obsolete/json/) directory contains the more recently used scripts (for the SpokenWeb export).
 
