@@ -312,6 +312,8 @@ ffmpeg -f concat -safe 0 -i ffmpeg_concat.txt -c copy 3g.mp4
 
 ### Spoken Web collection export
 
+If needed in July 2025 or thereafter, try the `aviary_api_expoert_2024-11-08.py` and export by a collection ID and this tool should replace the following workarounds in 2023/2024. The individual media files will need to be downloaded, however, this process has not yet been though through and thus not described here.
+
 Note: uses fragile workarounds as AVP Aviary API does not cover all the required features (e.g., pagination as of March 2024; index API added after Nov 2023).
 
 #### SpokenWeb Export Nov. 2023 & Mar. 2024
