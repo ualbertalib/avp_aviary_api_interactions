@@ -140,7 +140,7 @@ def process_resources_by_collection(args, session, collection_path, collection_i
     page_next = True
     # Resource pagination not documented in the API in 2023 
     # add test if page_number doesn't work to prevent infinite looping
-    # July 2025: "total_entries" introduced; refactor pageination
+    # July 2025: "total_entries" introduced as part of the API response; refactor pageination to simplify (no need to test if next page; use total_entries)
     first_id_of_page = 0
     while page_next:
         try:
