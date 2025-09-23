@@ -82,18 +82,14 @@ def download_media_simple(session, args, item_json):
 
 
 def download_media_with_downloadable_reset(session, args, item_json):
-    # From https://docs.google.com/document/d/1PSr6mpO3gWr9cxp2RAKJ2jjtVCfTrmsjjWMtXnhx8_Y/edit?tab=t.0
-    # Question:  Accessing downloadable files (e.g. the audio/video or supplemental file or transcript) if the item is not public and marked as not downloadable.
-    # Answer from vendor:
-    #   * 2 step process: not tied to permissions, is a parameter tied to a media file (y/n).
-    #   * PUT for time limited download status change,
-    #   * GET wasabi direct URL, Kevin recommends doing one by one.
-    #   * **SILR** collection should be **excluded** from this process
-
+  
     # Need is_downloadable to be true to allow present the download URL in the metadata and allow downloads
     #   * **SILR** collection should be **excluded** from this process
-    # Todo: error check
+    # Todo: defenive programing to test tor error contitions and gracefully verify changes are reverted back to original and/or
+    #    alert people a resoruce is in the wrong state (more than just add to a log file)
+    # Todo: change premissions on the resource to "private" before modifying "is_downloadable" then change back; error checking and recovery
     try:
+        # todo: change resource permission here and check return
         current_is_downloadable = original_is_downloadable = item_json['data']['is_downloadable']
         logging.info(f"Media before is_downloadable change: {item_json}")
         if original_is_downloadable is False:
@@ -116,6 +112,8 @@ def download_media_with_downloadable_reset(session, args, item_json):
             item = aviaryApi.get_media_item(args, session, args.media_id)
             item_json = json.loads(item)
             logging.info(f"Media after is_downloadable reset : {item_json}")
+            # todo: change resource permission back to original and check return
+
 
 
 #
