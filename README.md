@@ -59,7 +59,7 @@ The main scripts:
       * includes ability to optionally limit to a single collection or resource (see --help output for details)
       * stores in a hierarchical directory by collection id
 * Request media files from single Aviary media item by ID (note the script's special handling of media files with restricted access controls)
-  * [aviary_api_experimental_media_download_v2024-11-08.py](./aviary_api_experimental_media_download_v2024-11-08.py)
+  * [AVP (vendor code for media uploads](https://github.com/WeAreAVP/aviary-api-scripts/blob/main/Media%20Files%20Import/media_files_api.py)
 * Help with reporting Aviary content changes during a reporting period (experimental)
   * [Export metadata as CSV by type](./experimental/aviary_api_export_metadata_csv.py)
     * Export a CSV to help determine Aviary resources added within a reporting time period (requires importing into a spreadsheet resources added during the reporting period): 
