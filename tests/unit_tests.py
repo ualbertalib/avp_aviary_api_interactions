@@ -73,8 +73,7 @@ class TestUtilities(unittest.TestCase):
                 'Media download url': '',
                 'Media embed url': 'https://example.com',
                 'Media embed type': '',
-                'Media embed code': '',
-                'Transcode url': ''
+                'Media embed code': ''
             }
             self.assertEqual(tmp, expected)
 
@@ -106,7 +105,8 @@ class TestUtilities(unittest.TestCase):
                 'Language': 'en',
                 'Description': 'Avalon SRT Caption',
                 'Is downloadable': 'Yes',
-                'Has annotation set': 'True'
+                'Has annotation set': 'True',
+                'Export': ''
             }
             self.assertEqual(tmp, expected)
 
