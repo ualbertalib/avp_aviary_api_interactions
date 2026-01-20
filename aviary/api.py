@@ -224,19 +224,24 @@ def download_indexes_item(session, index, path):
     if 'export' not in index['data'] :
         logging.error(f"JSON key {index} {path}")
     else:
-        if ( index['data']['export']['file_name'] ):
-            file_name = index['data']['export']['file_name']
-        else:
-            # file_name sometimes "null" / "None"
-            file_name = f"{index['data']['id']}.webvtt"
-            logging.warning(f"Missing index file name in metadata {index}: assigning a default name {file_name}")
+        for key, value in index['data']['export'].items() :
 
-        local_file_path = os.path.join(path, file_name)
-        url = index['data']['export']['file']
+            if ( 'file_name' in value ):
+                file_name = value['file_name']
+            else:
+                # file_name sometimes "null" / "None"
+                file_name = f"{index['data']['id']}.webvtt"
+                logging.warning(f"Missing index file name in metadata {index}: assigning a default name {file_name}")
 
-        logging.info(f"{file_name} {index['data']['export']['file_content_type']}")
+            if ( 'file' in value ):
+                local_file_path = os.path.join(path, file_name)
+                url = value['file']
 
-        export_file(session, url, local_file_path) 
+                logging.info(f"{file_name} {value['file_content_type']}")
+
+                export_file(session, url, local_file_path)
+            else:
+                logging.error(f"Missing index file in metadata {index}")
 
 
 #
