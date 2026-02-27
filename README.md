@@ -64,8 +64,21 @@ The main scripts:
   * [Export metadata as CSV by type](./experimental/aviary_api_export_metadata_csv.py)
     * Export a CSV to help determine Aviary resources added within a reporting time period (requires importing into a spreadsheet resources added during the reporting period): 
       * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/z.csv --type r`
+      * Import into spreadsheet
+        * sort - created at desc
+        * new column (N) - Year: =LEFT(N2,4)
+        * new column (X)- Year with 2026, 2026...
+        * new column - Count: = COUNTIF(N:N, TEXT(X2, "0"))
     * Export a CSV to help determine duration of media added within a reporting time period (requires importing into a spreadsheet to sum duration of media added during the reporting period):
       * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/z.csv --type m`
+      * Import into spreadsheet
+        * hide rows
+        * sort - created at desc
+        * new column (AB) - Year: =LEFT(N2,4)
+        * new column (AC) - Duration (num): =VALUE(I2)
+        * new column (AD) - Year with 2026, 2026...
+        * new column - Duration ([HH]:MM:SS): = SUMIF(AB:AB, TEXT(AD2, "0"), AC:AC)
+        * new column - Count: = COUNTIF(AB:AB, TEXT(AD2, "0"))
 * Upload a list of media items (updated in 2025 but not working July 2025)
   * [aviary_media_api_upload_chunked.py](./experimental/aviary_media_api_upload_chunked.py)
 * Other scripts not mentioned here are likely broken by 2024 Aviary changes.
