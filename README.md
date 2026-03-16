@@ -63,14 +63,14 @@ The main scripts:
 * Help with reporting Aviary content changes during a reporting period (experimental)
   * [Export metadata as CSV by type](./experimental/aviary_api_export_metadata_csv.py)
     * Export a CSV to help determine Aviary resources added within a reporting time period (requires importing into a spreadsheet resources added during the reporting period): 
-      * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/z.csv --type r`
+      * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/aviary_resource_$(date +"%Y-%m-%d_%H-%M-%S").csv --type r`
       * Import into spreadsheet
         * sort - created at desc
         * new column (N) - Year: =LEFT(N2,4)
         * new column (X)- Year with 2026, 2026...
         * new column - Count: = COUNTIF(N:N, TEXT(X2, "0"))
     * Export a CSV to help determine duration of media added within a reporting time period (requires importing into a spreadsheet to sum duration of media added during the reporting period):
-      * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/z.csv --type m`
+      * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/aviary_media_$(date +"%Y-%m-%d_%H-%M-%S").csv --type m`
       * Import into spreadsheet
         * hide rows
         * sort - created at desc
