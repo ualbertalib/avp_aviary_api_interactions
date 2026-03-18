@@ -62,7 +62,20 @@ The main scripts:
   * [AVP (vendor code for media uploads](https://github.com/WeAreAVP/aviary-api-scripts/blob/main/Media%20Files%20Import/media_files_api.py)
 * Help with reporting Aviary content changes during a reporting period (experimental)
   * [Export metadata as CSV by type](./experimental/aviary_api_export_metadata_csv.py)
-    * Export a CSV to help determine Aviary resources added within a reporting time period (requires importing into a spreadsheet resources added during the reporting period): 
+* Upload a list of media items (updated in 2025 but not working July 2025)
+  * [aviary_media_api_upload_chunked.py](./experimental/aviary_media_api_upload_chunked.py)
+  * Replaced by [AVP Scripts Repository](https://github.com/WeAreAVP/aviary-api-scripts)
+* Other scripts not mentioned here are likely broken by 2024 Aviary changes.
+
+More about the [Aviary API in this link](https://aviaryplatform.com/api/v1/documentation).
+
+### Metrics Collection
+
+Sean Luyk (Aviary Service Team) will ask for the number of resources added and the duration of the media added for a given time period. 
+
+* Help with reporting Aviary content additions during a reporting period (experimental) using quick approach from 2022
+  * [Export metadata as CSV by type](./experimental/aviary_api_export_metadata_csv.py)
+    * Export a CSV to help determine Aviary resources added within a reporting time period (requires importing into a spreadsheet resources added during the reporting period):
       * `python3 -m experimental.aviary_api_export_metadata_csv --server 'https://ualberta.aviaryplatform.com/' --output /tmp/aviary_resource_$(date +"%Y-%m-%d_%H-%M-%S").csv --type r`
       * Import into spreadsheet
         * sort - created at desc
@@ -79,11 +92,7 @@ The main scripts:
         * new column (AD) - Year with 2026, 2026...
         * new column - Duration ([HH]:MM:SS): = SUMIF(AB:AB, TEXT(AD2, "0"), AC:AC)
         * new column - Count: = COUNTIF(AB:AB, TEXT(AD2, "0"))
-* Upload a list of media items (updated in 2025 but not working July 2025)
-  * [aviary_media_api_upload_chunked.py](./experimental/aviary_media_api_upload_chunked.py)
-* Other scripts not mentioned here are likely broken by 2024 Aviary changes.
-
-More about the [Aviary API in this link](https://aviaryplatform.com/api/v1/documentation).
+* The 2022 script gathers **all** resource and media metadata. In 2026-03-18, the process requires longer to run due to the API speed. An alternative, if the Aviary Audit Log is available via an API call, then it could be used as a filter on the assets based on the properties "action"->"created", "Action Date" within the range, and "Asset Type"->["CollectionResource"|"CollectionResourceFile"]. With the list of IDs, then the above script could capture the media file duration for each new media and aggregate. The advantage, process would be minutes, not hours.
 
 ## Development
 
