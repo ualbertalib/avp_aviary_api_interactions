@@ -23,6 +23,8 @@ import os
 import time
 import traceback
 
+import requests
+
 from aviary import api as aviaryApi
 from aviary import utilities as aviaryUtilities
 
@@ -84,19 +86,22 @@ def process_indexes(args, session, report_csv, indexes_list):
 def process_media_by_resource(args, session, report_csv, resource):
     count = 0
     for id in resource['data']['media_file_id']:
-        media_str = aviaryApi.get_media_item(args, session, id)
-        media = json.loads(media_str)
-        logging.debug(f"id: {id} \n    {resource} \n    {media}")
-        if args.type == 'm':
-            # Media metadata
-            report_csv.writerow(aviaryUtilities.processMediaJSON(media_str, "", "", resource['data']['id'], resource['data']['title']))
-        elif args.type == 'i':
-            # index attached to media
-            process_indexes(args, session, report_csv, media['data']['indexes'])
-        elif args.type == 't':
-            # transcript attached to media
-            process_transcripts(args, session, report_csv, media['data']['transcripts'])
-        count += 1
+        try:
+            media_str = aviaryApi.get_media_item(args, session, id)
+            media = json.loads(media_str)
+            logging.debug(f"id: {id} \n    {resource} \n    {media}")
+            if args.type == 'm':
+                # Media metadata
+                report_csv.writerow(aviaryUtilities.processMediaJSON(media_str, "", "", resource['data']['id'], resource['data']['title']))
+            elif args.type == 'i':
+                # index attached to media
+                process_indexes(args, session, report_csv, media['data']['indexes'])
+            elif args.type == 't':
+                # transcript attached to media
+                process_transcripts(args, session, report_csv, media['data']['transcripts'])
+            count += 1
+        except requests.exceptions.RetryError as e:
+            logging.error(f"Media ID {id} RetryError: {e}")
     aviaryUtilities.validateResourceMediaList(resource)
     if count > 10:
         logging.debug(f"Check: media files count: [{count}] media_files_count: [{resource['data']['media_files_count']}] - 'media_file_id' property for a 10 item limit.\n{resource}")
@@ -119,6 +124,9 @@ def process_resource(args, session, report_csv, id):
         else:
             # Media, Index, Transcript metadata
             process_media_by_resource(args, session, report_csv, resource)
+    except requests.exceptions.HTTPError as e:
+        logging.error(f"Resource ID {id} HTTPError: {e}")
+        #traceback.print_exc()
     except Exception as e:
         logging.error(f"Resource ID {id} Exception: {e}")
         traceback.print_exc()
@@ -152,6 +160,10 @@ def process_resources_by_collection(args, session, report_csv, collection_id):
                     else:
                         first_id_of_page = item['resource_id']
                         logging.info(f"Pagination {item['resource_id']} first {first_id_of_page} current page: {page_number}")
+                # if item['resource_id'] not in [57901, 57909, 116982]:
+                #    process_resource(args, session, report_csv, item['resource_id'])
+                #else:
+                #    logging.warning(f"Skipping resource {item['resource_id']} due to known issues with the resource metadata.")
                 process_resource(args, session, report_csv, item['resource_id'])
             print(f"Count resources: {index + 1}")
             if AVIARY_PAGE_SIZE > (index + 1):

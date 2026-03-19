@@ -60,9 +60,9 @@ def init_session(args, username, password):
 def init_session_api_key(server, organization_id=None):
 
     retry_strategy = Retry(
-        total=5,
-        backoff_factor=1, # Time between retries will be 2^(retry count) * backoff_factor status
-        status_forcelist=[429, 500, 502, 503, 504], # Retry on these status codes
+        total=10,
+        backoff_factor=5, # Time between retries will be 2^(retry count) * backoff_factor status
+        status_forcelist=[403, 429, 500, 502, 503, 504], # Retry on these status codes
         #allowed_methods=["HEAD", "GET", "OPTIONS"] # Methods to retry
     )
 
