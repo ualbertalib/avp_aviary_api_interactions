@@ -93,7 +93,7 @@ Sean Luyk (Aviary Service Team) will ask for the number of resources added and t
         * new column (AD) - Year with text 2026, 2025...
         * new column - Duration (cell format [HH]:MM:SS): = SUMIF(AB:AB, TEXT(AD2, "0"), AC:AC)
         * new column - Count: = COUNTIF(AB:AB, TEXT(AD2, "0"))
-* The 2022 script gathers **all** resource and media metadata. In 2026-03-18, the process requires longer to run due to the API speed. An alternative, if the Aviary Audit Log is available via an API call, then it could be used as a filter on the assets based on the properties "action"⇾"created", "Action Date" within the range, and "Asset Type"⇾["CollectionResource"|"CollectionResourceFile"] minus assets with "Action"⇾"destroy". With the list of IDs, then the above script could capture resource counts and aggregated medi duration. The advantage, not having to extract metadata for **all** resources and especially media means the process would be minutes, not hours.
+* The 2022 script gathers **all** resource and media metadata. In 2026-03-18, the process requires longer to run due to the API speed. An alternative, if the Aviary Audit Log is available via an API call, then it could be used as a filter on the assets based on the properties "action"⇾"created", "Action Date" within the range, and "Asset Type"⇾["CollectionResource"|"CollectionResourceFile"] minus assets with "Action"⇾"destroy". With the list of IDs, then the above script could capture resource counts and aggregated media duration. The advantage, not having to extract metadata for **all** resources and especially media means the process would be minutes, not hours.
 
 ## Development
 
